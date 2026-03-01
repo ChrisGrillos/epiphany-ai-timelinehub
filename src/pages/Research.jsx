@@ -296,6 +296,7 @@ function ArticleCard({ article: a, onTagClick }) {
           )}
         </div>
         <h3 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2">{a.title}</h3>
+        {a.author && <p className="text-slate-400 text-xs mb-1">by {a.author}</p>}
         {a.excerpt && <p className="text-slate-500 text-sm line-clamp-3 flex-1">{a.excerpt}</p>}
         {a.tags?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
