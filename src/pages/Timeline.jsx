@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format, parseISO } from "date-fns";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import DocumentSearch from "@/components/research/DocumentSearch";
+import DocumentNavigatorPanel from "@/components/research/DocumentNavigatorPanel";
 
 const CATEGORIES = ["All", "Framework Release", "Business Idea", "Research Milestone", "Product Launch", "Other"];
 const CAT_COLORS = {
@@ -24,6 +26,7 @@ export default function Timeline() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [lightbox, setLightbox] = useState(null); // { urls, index }
+  const [showDocNav, setShowDocNav] = useState(false);
 
   useEffect(() => {
     base44.entities.TimelineEntry.filter({ published: true }, "entry_date", 200)
@@ -228,8 +231,24 @@ export default function Timeline() {
               )}
             </div>
           </DialogContent>
-        </Dialog>
-      )}
-    </div>
-  );
-}
+          </Dialog>
+          )}
+
+          {/* Floating Panel */}
+          {showDocNav && (
+          <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm shadow-2xl">
+          <DocumentNavigatorPanel onClose={() => setShowDocNav(false)} />
+          </div>
+          )}
+
+          {!showDocNav && (
+          <button
+          onClick={() => setShowDocNav(true)}
+          className="fixed bottom-6 right-6 z-50 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-5 py-3 shadow-lg flex items-center gap-2 font-medium text-sm transition-colors"
+          >
+          <Search className="w-4 h-4" /> Document Navigator
+          </button>
+          )}
+          </div>
+          );
+          }
