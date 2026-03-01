@@ -2,11 +2,12 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { Brain, ExternalLink, Clock, Search, ChevronDown, X, SlidersHorizontal } from "lucide-react";
+import { Brain, ExternalLink, Clock, Search, X, SlidersHorizontal, Sparkles, Upload, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import AIAssistantPanel from "@/components/research/AIAssistantPanel";
 
 const CATEGORIES = ["All", "Research", "AI", "Strategy", "Think Tank", "Case Study", "Other"];
 const DOC_TYPES = [

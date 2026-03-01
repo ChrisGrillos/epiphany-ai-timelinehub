@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { ArrowLeft, Clock, ExternalLink, Brain } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
+import RelatedArticles, { trackRead } from "@/components/research/RelatedArticles";
 
 export default function Article() {
   const [article, setArticle] = useState(null);
@@ -15,7 +16,11 @@ export default function Article() {
     const id = params.get("id");
     if (id) {
       base44.entities.Article.filter({ id }, "-created_date", 1)
-        .then(res => setArticle(res[0] || null))
+        .then(res => {
+          const found = res[0] || null;
+          setArticle(found);
+          if (found) trackRead(found.id, found.tags, found.category);
+        })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -82,6 +87,9 @@ export default function Article() {
             </a>
           </div>
         ) : null}
+
+        {/* Related / Recommended */}
+        <RelatedArticles currentArticle={article} />
       </article>
     </div>
   );
