@@ -57,7 +57,9 @@ export default function Research() {
         a.title?.toLowerCase().includes(search.toLowerCase()) ||
         a.excerpt?.toLowerCase().includes(search.toLowerCase()) ||
         a.tags?.some(t => t.toLowerCase().includes(search.toLowerCase()));
-      return matchCat && matchType && matchTag && matchSearch;
+      const matchFrom = !dateFrom || (a.created_date && a.created_date.slice(0,10) >= dateFrom);
+      const matchTo = !dateTo || (a.created_date && a.created_date.slice(0,10) <= dateTo);
+      return matchCat && matchType && matchTag && matchSearch && matchFrom && matchTo;
     });
 
     if (sortBy === "oldest") result = [...result].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
