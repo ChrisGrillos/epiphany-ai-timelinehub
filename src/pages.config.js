@@ -53,6 +53,7 @@ import Apps from './pages/Apps';
 import Article from './pages/Article';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -67,4 +68,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "Home",
     Pages: PAGES,
+    Layout: __Layout,
 };
