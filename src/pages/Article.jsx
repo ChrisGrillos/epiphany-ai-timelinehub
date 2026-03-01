@@ -89,6 +89,9 @@ export default function Article() {
           </div>
         ) : null}
 
+        {/* AI Summarizer */}
+        <ArticleSummarizer article={article} />
+
         {/* Related / Recommended */}
         <RelatedArticles currentArticle={article} />
       </article>
