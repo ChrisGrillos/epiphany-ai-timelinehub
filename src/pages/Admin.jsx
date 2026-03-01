@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ArticleAdmin from "@/components/admin/ArticleAdmin";
 import AppAdmin from "@/components/admin/AppAdmin";
 import InquiriesAdmin from "@/components/admin/InquiriesAdmin";
+import TimelineAdmin from "@/components/admin/TimelineAdmin";
 import { Shield } from "lucide-react";
 
 export default function Admin() {
