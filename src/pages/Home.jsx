@@ -29,13 +29,31 @@ export default function Home() {
       {/* Hero */}
       <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{backgroundImage: "radial-gradient(circle at 30% 50%, #6366f1 0%, transparent 50%), radial-gradient(circle at 70% 20%, #0ea5e9 0%, transparent 40%)"}} />
+        {/* Subtle rain effect overlay */}
+        <div className="absolute inset-0 opacity-5" style={{backgroundImage: "repeating-linear-gradient(170deg, transparent, transparent 2px, rgba(99,102,241,0.3) 2px, rgba(99,102,241,0.3) 3px)", backgroundSize: "40px 80px"}} />
+
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <Badge className="mb-6 bg-indigo-500/20 text-indigo-300 border-indigo-500/30 text-sm px-4 py-1.5">
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <img
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a483f1b63aa16c4fae1642/53213075a_Logo.png"
+              alt="Epiphany.AI Logo"
+              className="w-40 h-40 md:w-52 md:h-52 object-contain drop-shadow-2xl"
+            />
+          </div>
+
+          <Badge className="mb-4 bg-indigo-500/20 text-indigo-300 border-indigo-500/30 text-sm px-4 py-1.5">
             AI Research · Strategy · Think Tank
           </Badge>
-          <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 leading-tight tracking-tight">
+          <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 leading-tight tracking-tight">
             Epiphany<span className="text-indigo-400">.</span>AI
           </h1>
+
+          {/* Quote */}
+          <p className="text-lg md:text-xl text-cyan-400 font-medium mb-3 tracking-wide italic">
+            "Tomorrow, Today — Come in from the rain"
+          </p>
+
           <p className="text-xl md:text-2xl text-slate-300 mb-4 max-w-3xl mx-auto font-light">
             Where breakthrough ideas meet rigorous strategy.
           </p>
