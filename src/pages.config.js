@@ -53,6 +53,7 @@ import Apps from './pages/Apps';
 import Article from './pages/Article';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
+import Timeline from './pages/Timeline';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +64,7 @@ export const PAGES = {
     "Article": Article,
     "Contact": Contact,
     "Admin": Admin,
+    "Timeline": Timeline,
 }
 
 export const pagesConfig = {
