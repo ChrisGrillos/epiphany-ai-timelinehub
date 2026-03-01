@@ -70,7 +70,7 @@ export default function Research() {
     return result;
   }, [articles, activeCategory, docType, sortBy, activeTag, search]);
 
-  const hasActiveFilters = activeCategory !== "All" || docType !== "all" || activeTag || search;
+  const hasActiveFilters = activeCategory !== "All" || docType !== "all" || activeTag || search || dateFrom || dateTo;
 
   const clearAll = () => {
     setActiveCategory("All");
@@ -78,6 +78,8 @@ export default function Research() {
     setActiveTag(null);
     setSearch("");
     setSortBy("newest");
+    setDateFrom("");
+    setDateTo("");
   };
 
   return (
