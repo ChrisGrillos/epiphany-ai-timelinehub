@@ -193,6 +193,23 @@ export default function Research() {
         </div>
       </div>
 
+      {/* AI Assistant floating panel */}
+      {showAI && (
+        <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm shadow-2xl">
+          <AIAssistantPanel onClose={() => setShowAI(false)} />
+        </div>
+      )}
+
+      {/* AI Assistant trigger */}
+      {!showAI && (
+        <button
+          onClick={() => setShowAI(true)}
+          className="fixed bottom-6 right-6 z-50 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-5 py-3 shadow-lg flex items-center gap-2 font-medium text-sm transition-colors"
+        >
+          <Sparkles className="w-4 h-4" /> AI Assistant
+        </button>
+      )}
+
       {/* Results count */}
       <div className="max-w-6xl mx-auto px-6 pt-6 pb-2">
         <p className="text-sm text-slate-400">
