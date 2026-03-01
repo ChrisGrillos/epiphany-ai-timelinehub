@@ -54,6 +54,7 @@ import Contact from './pages/Contact';
 import Home from './pages/Home';
 import Research from './pages/Research';
 import Timeline from './pages/Timeline';
+import CaseStudies from './pages/CaseStudies';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +66,7 @@ export const PAGES = {
     "Home": Home,
     "Research": Research,
     "Timeline": Timeline,
+    "CaseStudies": CaseStudies,
 }
 
 export const pagesConfig = {
