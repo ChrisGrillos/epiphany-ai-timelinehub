@@ -37,6 +37,8 @@ export default function Research() {
   const [showAI, setShowAI] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [aiSearchIds, setAiSearchIds] = useState(null); // null = not active
+  const [aiSearchQuery, setAiSearchQuery] = useState("");
 
   useEffect(() => {
     base44.entities.Article.filter({ published: true }, "-created_date", 100)
