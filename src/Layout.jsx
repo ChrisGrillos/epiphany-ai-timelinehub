@@ -109,7 +109,7 @@ export default function Layout({ children, currentPageName }) {
               <p className="text-white text-sm font-semibold mb-3">Connect</p>
               <div className="space-y-2 text-sm">
                 <a href="https://x.com/cmgdank" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">Twitter / X</a>
-                <a href="https://medium.com/@cmgdank" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">Medium</a>
+                <a href="https://medium.com/@cmgrillos529" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">Medium</a>
                 <Link to={createPageUrl("Contact")} className="block hover:text-white transition-colors">Contact</Link>
               </div>
             </div>
