@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AIAssistantPanel from "@/components/research/AIAssistantPanel";
+import AISearch from "@/components/research/AISearch";
+import ResearchRecommendations from "@/components/research/ResearchRecommendations";
 
 const CATEGORIES = ["All", "Research", "AI", "Strategy", "Think Tank", "Case Study", "Other"];
 const DOC_TYPES = [
