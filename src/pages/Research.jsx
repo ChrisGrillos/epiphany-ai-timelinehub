@@ -107,7 +107,7 @@ export default function Research() {
             <Input
               placeholder="Search titles, excerpts, tags..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => { setSearch(e.target.value); setAiSearchIds(null); }}
               className="pl-12 pr-4 py-3 rounded-full bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 text-base"
             />
             {search && (
@@ -115,6 +115,15 @@ export default function Research() {
                 <X className="w-4 h-4" />
               </button>
             )}
+          </div>
+          {/* AI Search */}
+          <div className="mt-3 max-w-xl mx-auto">
+            <AISearch
+              articles={articles}
+              onResults={(ids, q) => { setAiSearchIds(ids); setAiSearchQuery(q); setSearch(""); }}
+              onClear={() => { setAiSearchIds(null); setAiSearchQuery(""); }}
+              isActive={!!aiSearchIds}
+            />
           </div>
         </div>
       </section>
