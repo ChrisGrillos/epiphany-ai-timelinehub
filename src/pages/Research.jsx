@@ -245,11 +245,14 @@ export default function Research() {
       {/* Articles Grid */}
       <section className="py-6 px-6 pb-16">
         <div className="max-w-6xl mx-auto">
+          {/* Recommendations */}
+          {!aiSearchIds && <ResearchRecommendations allArticles={articles} />}
+
           {loading ? (
             <div className="grid md:grid-cols-3 gap-8">
               {[1,2,3,4,5,6].map(i => <div key={i} className="h-64 bg-slate-100 rounded-2xl animate-pulse" />)}
             </div>
-          ) : filtered.length === 0 ? (
+          ) : displayedArticles.length === 0 ? (
             <div className="text-center py-24 text-slate-400">
               <Brain className="w-12 h-12 mx-auto mb-4 opacity-30" />
               <p className="text-lg">No articles match your filters.</p>
@@ -257,8 +260,8 @@ export default function Research() {
             </div>
           ) : (
             <div className="grid md:grid-cols-3 gap-8">
-              {filtered.map(a => (
-                <ArticleCard key={a.id} article={a} onTagClick={tag => { setActiveTag(tag); setShowFilters(true); }} />
+              {displayedArticles.map(a => (
+                <ArticleCard key={a.id} article={a} onTagClick={tag => { setActiveTag(tag); setShowFilters(true); setAiSearchIds(null); }} />
               ))}
             </div>
           )}
