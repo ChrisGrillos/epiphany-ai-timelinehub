@@ -5,6 +5,7 @@ import ArticleAdmin from "@/components/admin/ArticleAdmin";
 import AppAdmin from "@/components/admin/AppAdmin";
 import InquiriesAdmin from "@/components/admin/InquiriesAdmin";
 import TimelineAdmin from "@/components/admin/TimelineAdmin";
+import AnalyticsAdmin from "@/components/admin/AnalyticsAdmin";
 import { Shield } from "lucide-react";
 
 export default function Admin() {
@@ -39,13 +40,15 @@ export default function Admin() {
         </div>
       </div>
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <Tabs defaultValue="articles">
+        <Tabs defaultValue="analytics">
           <TabsList className="mb-8 bg-white border border-slate-100 shadow-sm">
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="articles">Articles & Research</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="apps">Apps</TabsTrigger>
             <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           </TabsList>
+          <TabsContent value="analytics"><AnalyticsAdmin /></TabsContent>
           <TabsContent value="articles"><ArticleAdmin /></TabsContent>
           <TabsContent value="timeline"><TimelineAdmin /></TabsContent>
           <TabsContent value="apps"><AppAdmin /></TabsContent>
