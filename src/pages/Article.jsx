@@ -6,6 +6,7 @@ import { ArrowLeft, Clock, ExternalLink, Brain } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 import RelatedArticles, { trackRead } from "@/components/research/RelatedArticles";
+import ArticleSummarizer from "@/components/research/ArticleSummarizer";
 
 export default function Article() {
   const [article, setArticle] = useState(null);
