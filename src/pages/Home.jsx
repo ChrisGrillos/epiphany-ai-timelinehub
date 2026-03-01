@@ -112,7 +112,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* Featured Apps */}
+      {/* Featured Apps — Spotlight on first featured, grid for rest */}
       {featuredApps.length > 0 && (
         <section className="py-24 px-6 bg-slate-50">
           <div className="max-w-6xl mx-auto">
@@ -125,17 +125,51 @@ export default function Home() {
                 View All <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {featuredApps.map(app => (
-                <Link key={app.id} to={createPageUrl("Apps")} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow group">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center mb-4 overflow-hidden">
-                    {app.icon_url ? <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" /> : <Brain className="w-7 h-7 text-indigo-500" />}
+
+            {/* Spotlight: first featured app */}
+            {featuredApps[0] && (
+              <Link to={createPageUrl("Apps")} className="block mb-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow overflow-hidden group">
+                <div className="flex flex-col md:flex-row">
+                  <div className="md:w-5/12 aspect-video md:aspect-auto bg-gradient-to-br from-indigo-100 to-slate-100 flex items-center justify-center overflow-hidden">
+                    {featuredApps[0].screenshot_urls?.[0] ? (
+                      <img src={featuredApps[0].screenshot_urls[0]} alt={featuredApps[0].name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <Brain className="w-16 h-16 text-indigo-300" />
+                    )}
                   </div>
-                  <h3 className="font-semibold text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors">{app.name}</h3>
-                  <p className="text-slate-500 text-sm line-clamp-2">{app.tagline}</p>
-                </Link>
-              ))}
-            </div>
+                  <div className="md:w-7/12 p-8 flex flex-col justify-center">
+                    <span className="text-indigo-500 text-xs font-semibold uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse inline-block" /> Featured App
+                    </span>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center overflow-hidden shrink-0">
+                        {featuredApps[0].icon_url ? <img src={featuredApps[0].icon_url} alt={featuredApps[0].name} className="w-full h-full object-cover" /> : <Brain className="w-6 h-6 text-indigo-500" />}
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{featuredApps[0].name}</h3>
+                    </div>
+                    {featuredApps[0].tagline && <p className="text-slate-600 mb-2">{featuredApps[0].tagline}</p>}
+                    {featuredApps[0].description && <p className="text-slate-400 text-sm line-clamp-2">{featuredApps[0].description}</p>}
+                  </div>
+                </div>
+              </Link>
+            )}
+
+            {/* Additional featured apps */}
+            {featuredApps.length > 1 && (
+              <div className="grid md:grid-cols-2 gap-6">
+                {featuredApps.slice(1).map(app => (
+                  <Link key={app.id} to={createPageUrl("Apps")} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow group flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center overflow-hidden shrink-0">
+                      {app.icon_url ? <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" /> : <Brain className="w-7 h-7 text-indigo-500" />}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors">{app.name}</h3>
+                      <p className="text-slate-500 text-sm line-clamp-2">{app.tagline}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

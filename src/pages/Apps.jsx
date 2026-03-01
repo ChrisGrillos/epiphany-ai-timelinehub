@@ -4,6 +4,8 @@ import { Brain, ExternalLink, Play, Apple, MonitorDown, Globe } from "lucide-rea
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import ScreenshotCarousel from "@/components/apps/ScreenshotCarousel";
+import ShareAppButton from "@/components/apps/ShareAppButton";
 
 export default function Apps() {
   const [apps, setApps] = useState([]);
@@ -19,6 +21,7 @@ export default function Apps() {
   }, []);
 
   const filtered = activeCategory === "All" ? apps : apps.filter(a => a.category === activeCategory);
+  const featuredApp = apps.find(a => a.featured);
 
   return (
     <div className="min-h-screen bg-white">
@@ -30,6 +33,58 @@ export default function Apps() {
           <p className="text-slate-400 text-lg">AI-powered tools built by Epiphany.AI — launch in-browser or download from your preferred store.</p>
         </div>
       </section>
+
+      {/* Featured App Spotlight */}
+      {featuredApp && (
+        <section className="py-12 px-6 bg-indigo-50 border-b border-indigo-100">
+          <div className="max-w-6xl mx-auto">
+            <p className="text-indigo-600 font-semibold tracking-widest text-xs uppercase mb-5 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse inline-block" /> Featured App
+            </p>
+            <div className="bg-white rounded-3xl shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div className="md:w-1/2">
+                <ScreenshotCarousel screenshots={featuredApp.screenshot_urls} appName={featuredApp.name} />
+                {(!featuredApp.screenshot_urls?.length) && (
+                  <div className="aspect-video bg-gradient-to-br from-indigo-100 to-slate-100 flex items-center justify-center">
+                    <Brain className="w-16 h-16 text-indigo-300" />
+                  </div>
+                )}
+              </div>
+              <div className="md:w-1/2 p-8 flex flex-col justify-center">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center overflow-hidden shrink-0">
+                    {featuredApp.icon_url ? <img src={featuredApp.icon_url} alt={featuredApp.name} className="w-full h-full object-cover" /> : <Brain className="w-8 h-8 text-indigo-500" />}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900">{featuredApp.name}</h2>
+                    {featuredApp.category && <Badge className="bg-indigo-50 text-indigo-600 border-0 text-xs mt-1">{featuredApp.category}</Badge>}
+                  </div>
+                </div>
+                {featuredApp.tagline && <p className="text-slate-600 text-lg mb-2">{featuredApp.tagline}</p>}
+                {featuredApp.description && <p className="text-slate-500 text-sm leading-relaxed mb-6">{featuredApp.description}</p>}
+                <div className="flex flex-wrap gap-2">
+                  {(featuredApp.embed_url || featuredApp.web_url) && (
+                    <Button onClick={() => setLaunchApp(featuredApp)} className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-full gap-1.5">
+                      <Play className="w-4 h-4" /> Launch App
+                    </Button>
+                  )}
+                  {featuredApp.app_store_url && (
+                    <Button variant="outline" asChild className="rounded-full gap-1.5">
+                      <a href={featuredApp.app_store_url} target="_blank" rel="noopener noreferrer"><Apple className="w-4 h-4" /> App Store</a>
+                    </Button>
+                  )}
+                  {featuredApp.play_store_url && (
+                    <Button variant="outline" asChild className="rounded-full gap-1.5">
+                      <a href={featuredApp.play_store_url} target="_blank" rel="noopener noreferrer"><Play className="w-4 h-4" /> Google Play</a>
+                    </Button>
+                  )}
+                  <ShareAppButton app={featuredApp} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Category Filter */}
       <div className="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-10">
@@ -94,13 +149,14 @@ export default function Apps() {
 
 function AppCard({ app, onLaunch }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all overflow-hidden">
-      {app.screenshot_urls?.[0] && (
-        <div className="aspect-video overflow-hidden">
-          <img src={app.screenshot_urls[0]} alt={app.name} className="w-full h-full object-cover" />
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col">
+      <ScreenshotCarousel screenshots={app.screenshot_urls} appName={app.name} />
+      {!app.screenshot_urls?.length && app.icon_url && (
+        <div className="aspect-video bg-gradient-to-br from-indigo-50 to-slate-100 flex items-center justify-center">
+          <img src={app.icon_url} alt={app.name} className="w-16 h-16 rounded-2xl object-cover" />
         </div>
       )}
-      <div className="p-6">
+      <div className="p-6 flex-1 flex flex-col">
         <div className="flex items-start gap-4 mb-4">
           <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center overflow-hidden shrink-0">
             {app.icon_url ? <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" /> : <Brain className="w-7 h-7 text-indigo-500" />}
@@ -111,8 +167,8 @@ function AppCard({ app, onLaunch }) {
             {app.category && <Badge className="mt-1 bg-indigo-50 text-indigo-600 border-0 text-xs">{app.category}</Badge>}
           </div>
         </div>
-        {app.description && <p className="text-slate-500 text-sm mb-5 line-clamp-3">{app.description}</p>}
-        
+        {app.description && <p className="text-slate-500 text-sm mb-5 line-clamp-3 flex-1">{app.description}</p>}
+
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2">
           {(app.embed_url || app.web_url) && (
@@ -140,6 +196,7 @@ function AppCard({ app, onLaunch }) {
               <a href={app.windows_store_url} target="_blank" rel="noopener noreferrer"><MonitorDown className="w-3.5 h-3.5" /> Windows</a>
             </Button>
           )}
+          <ShareAppButton app={app} />
         </div>
       </div>
     </div>
