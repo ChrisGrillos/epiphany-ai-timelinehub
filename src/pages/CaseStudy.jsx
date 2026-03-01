@@ -5,8 +5,10 @@ import { base44 } from "@/api/base44Client";
 import { ArrowLeft, Brain, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
+import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
 
 export default function CaseStudy() {
+  const { trackPageView, trackTimeOnPage } = useInteractionTracking();
   const [caseStudy, setCaseStudy] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,12 +17,23 @@ export default function CaseStudy() {
     const id = params.get("id");
     if (id) {
       base44.entities.CaseStudy.filter({ id }, "-created_date", 1)
-        .then(res => setCaseStudy(res[0] || null))
+        .then(res => {
+          const found = res[0] || null;
+          setCaseStudy(found);
+          if (found) {
+            trackPageView(found.id, found.title, 'CaseStudy', null, found.tags);
+          }
+        })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!caseStudy) return;
+    return trackTimeOnPage(caseStudy.id, caseStudy.title, 'CaseStudy');
+  }, [caseStudy]);
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
