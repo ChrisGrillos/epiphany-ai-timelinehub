@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import AIAssistantPanel from "@/components/research/AIAssistantPanel";
 import AISearch from "@/components/research/AISearch";
 import ResearchRecommendations from "@/components/research/ResearchRecommendations";
+import DocumentSearch from "@/components/research/DocumentSearch";
+import DocumentNavigatorPanel from "@/components/research/DocumentNavigatorPanel";
 
 const CATEGORIES = ["All", "Research", "AI", "Strategy", "Think Tank", "Case Study", "Other"];
 const DOC_TYPES = [
@@ -39,6 +41,9 @@ export default function Research() {
   const [dateTo, setDateTo] = useState("");
   const [aiSearchIds, setAiSearchIds] = useState(null); // null = not active
   const [aiSearchQuery, setAiSearchQuery] = useState("");
+  const [showDocNav, setShowDocNav] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [hasSearchResults, setHasSearchResults] = useState(false);
 
   useEffect(() => {
     base44.entities.Article.filter({ published: true }, "-created_date", 100)
@@ -101,20 +106,13 @@ export default function Research() {
           <p className="text-indigo-400 font-semibold tracking-widest text-sm uppercase mb-3">Research & Publications</p>
           <h1 className="text-5xl font-bold text-white mb-4">The Work</h1>
           <p className="text-slate-400 text-lg">Papers, articles, case studies, and thought leadership from Epiphany.AI</p>
-          {/* Search in hero */}
-          <div className="relative mt-8 max-w-xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <Input
-              placeholder="Search titles, excerpts, tags..."
-              value={search}
-              onChange={e => { setSearch(e.target.value); setAiSearchIds(null); }}
-              className="pl-12 pr-4 py-3 rounded-full bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:bg-white/20 text-base"
+          {/* Advanced Document Search */}
+          <div className="mt-8 max-w-xl mx-auto">
+            <DocumentSearch
+              onResults={(results, q) => { setSearchResults(results); setHasSearchResults(true); }}
+              onClear={() => { setSearchResults([]); setHasSearchResults(false); }}
+              entityTypes={["Article", "CaseStudy", "App", "TimelineEntry"]}
             />
-            {search && (
-              <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
-                <X className="w-4 h-4" />
-              </button>
-            )}
           </div>
           {/* AI Search */}
           <div className="mt-3 max-w-xl mx-auto">
@@ -213,21 +211,34 @@ export default function Research() {
         </div>
       </div>
 
-      {/* AI Assistant floating panel */}
-      {showAI && (
+      {/* Floating Panels */}
+      {showDocNav && (
+        <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm shadow-2xl">
+          <DocumentNavigatorPanel onClose={() => setShowDocNav(false)} />
+        </div>
+      )}
+
+      {showAI && !showDocNav && (
         <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm shadow-2xl">
           <AIAssistantPanel onClose={() => setShowAI(false)} />
         </div>
       )}
 
-      {/* AI Assistant trigger */}
-      {!showAI && (
-        <button
-          onClick={() => setShowAI(true)}
-          className="fixed bottom-6 right-6 z-50 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-5 py-3 shadow-lg flex items-center gap-2 font-medium text-sm transition-colors"
-        >
-          <Sparkles className="w-4 h-4" /> AI Assistant
-        </button>
+      {!showAI && !showDocNav && (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+          <button
+            onClick={() => setShowDocNav(true)}
+            className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-5 py-3 shadow-lg flex items-center gap-2 font-medium text-sm transition-colors"
+          >
+            <Search className="w-4 h-4" /> Document Navigator
+          </button>
+          <button
+            onClick={() => setShowAI(true)}
+            className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-5 py-3 shadow-lg flex items-center gap-2 font-medium text-sm transition-colors"
+          >
+            <Sparkles className="w-4 h-4" /> AI Assistant
+          </button>
+        </div>
       )}
 
       {/* Results count */}
