@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { Brain, ArrowRight } from "lucide-react";
+import { Brain, ArrowRight, Search, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import DocumentSearch from "@/components/research/DocumentSearch";
+import DocumentNavigatorPanel from "@/components/research/DocumentNavigatorPanel";
 
 export default function CaseStudies() {
   const [caseStudies, setCaseStudies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTag, setSelectedTag] = useState(null);
+  const [showDocNav, setShowDocNav] = useState(false);
+  const [showAI, setShowAI] = useState(false);
 
   useEffect(() => {
     base44.entities.CaseStudy.filter({ published: true }, "-created_date", 100)
@@ -34,6 +38,14 @@ export default function CaseStudies() {
           <p className="text-indigo-400 font-semibold tracking-widest text-sm uppercase mb-3">Case Studies</p>
           <h1 className="text-5xl font-bold text-white mb-4">Our Work</h1>
           <p className="text-slate-400 text-lg">Real projects. Real results. Real impact.</p>
+          {/* Document Search */}
+          <div className="mt-8 max-w-xl mx-auto">
+            <DocumentSearch
+              onResults={() => {}}
+              onClear={() => {}}
+              entityTypes={["CaseStudy", "Article", "App", "TimelineEntry"]}
+            />
+          </div>
         </div>
       </section>
 
@@ -82,6 +94,22 @@ export default function CaseStudies() {
           )}
         </div>
       </section>
+
+      {/* Floating Panels */}
+      {showDocNav && (
+        <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm shadow-2xl">
+          <DocumentNavigatorPanel onClose={() => setShowDocNav(false)} />
+        </div>
+      )}
+
+      {!showDocNav && (
+        <button
+          onClick={() => setShowDocNav(true)}
+          className="fixed bottom-6 right-6 z-50 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-5 py-3 shadow-lg flex items-center gap-2 font-medium text-sm transition-colors"
+        >
+          <Search className="w-4 h-4" /> Document Navigator
+        </button>
+      )}
     </div>
   );
 }
