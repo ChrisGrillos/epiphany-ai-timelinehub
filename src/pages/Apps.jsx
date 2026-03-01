@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Brain, ExternalLink, Play, Apple, MonitorDown, Globe } from "lucide-react";
+import { Brain, ExternalLink, Play, Apple, MonitorDown, Globe, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ScreenshotCarousel from "@/components/apps/ScreenshotCarousel";
 import ShareAppButton from "@/components/apps/ShareAppButton";
+import DocumentSearch from "@/components/research/DocumentSearch";
+import DocumentNavigatorPanel from "@/components/research/DocumentNavigatorPanel";
 
 export default function Apps() {
   const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
   const [launchApp, setLaunchApp] = useState(null);
+  const [showDocNav, setShowDocNav] = useState(false);
 
   const CATEGORIES = ["All", "AI Tool", "Research Tool", "Strategy", "Productivity", "Other"];
 
@@ -31,6 +34,14 @@ export default function Apps() {
           <p className="text-indigo-400 font-semibold tracking-widest text-sm uppercase mb-3">Tools & Products</p>
           <h1 className="text-5xl font-bold text-white mb-4">Our Apps</h1>
           <p className="text-slate-400 text-lg">AI-powered tools built by Epiphany.AI — launch in-browser or download from your preferred store.</p>
+          {/* Document Search */}
+          <div className="mt-8 max-w-xl mx-auto">
+            <DocumentSearch
+              onResults={() => {}}
+              onClear={() => {}}
+              entityTypes={["App", "Article", "CaseStudy", "TimelineEntry"]}
+            />
+          </div>
         </div>
       </section>
 
@@ -141,11 +152,27 @@ export default function Apps() {
               <div className="flex items-center justify-center h-full text-slate-400">No embed URL available.</div>
             )}
           </DialogContent>
-        </Dialog>
-      )}
-    </div>
-  );
-}
+          </Dialog>
+          )}
+
+          {/* Floating Panel */}
+          {showDocNav && (
+          <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm shadow-2xl">
+          <DocumentNavigatorPanel onClose={() => setShowDocNav(false)} />
+          </div>
+          )}
+
+          {!showDocNav && (
+          <button
+          onClick={() => setShowDocNav(true)}
+          className="fixed bottom-6 right-6 z-50 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-5 py-3 shadow-lg flex items-center gap-2 font-medium text-sm transition-colors"
+          >
+          <Search className="w-4 h-4" /> Document Navigator
+          </button>
+          )}
+          </div>
+          );
+          }
 
 function AppCard({ app, onLaunch }) {
   return (
