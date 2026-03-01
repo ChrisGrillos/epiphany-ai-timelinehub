@@ -52,6 +52,7 @@ import Research from './pages/Research';
 import Apps from './pages/Apps';
 import Article from './pages/Article';
 import Contact from './pages/Contact';
+import Admin from './pages/Admin';
 
 
 export const PAGES = {
@@ -60,6 +61,7 @@ export const PAGES = {
     "Apps": Apps,
     "Article": Article,
     "Contact": Contact,
+    "Admin": Admin,
 }
 
 export const pagesConfig = {
