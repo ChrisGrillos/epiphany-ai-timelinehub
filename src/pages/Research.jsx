@@ -233,8 +233,12 @@ export default function Research() {
       {/* Results count */}
       <div className="max-w-6xl mx-auto px-6 pt-6 pb-2">
         <p className="text-sm text-slate-400">
-          {loading ? "Loading..." : `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`}
-          {hasActiveFilters && <span> · <button onClick={clearAll} className="text-indigo-500 hover:underline">clear filters</button></span>}
+          {loading ? "Loading..." : (
+            aiSearchIds
+              ? <><span className="text-indigo-500 font-medium">AI Search</span>: "{aiSearchQuery}" — {displayedArticles.length} result{displayedArticles.length !== 1 ? "s" : ""}</>
+              : `${displayedArticles.length} result${displayedArticles.length !== 1 ? "s" : ""}`
+          )}
+          {(hasActiveFilters || aiSearchIds) && <span> · <button onClick={clearAll} className="text-indigo-500 hover:underline">clear</button></span>}
         </p>
       </div>
 
