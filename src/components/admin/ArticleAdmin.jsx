@@ -107,6 +107,10 @@ export default function ArticleAdmin() {
                 <Label className="mb-1.5 block">Title *</Label>
                 <Input value={editing.title} onChange={e => setEditing({...editing, title: e.target.value})} />
               </div>
+              <div>
+                <Label className="mb-1.5 block">Author</Label>
+                <Input value={editing.author || ""} onChange={e => setEditing({...editing, author: e.target.value})} placeholder="Author name(s)" />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="mb-1.5 block">Source</Label>
