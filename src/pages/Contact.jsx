@@ -46,7 +46,17 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="font-medium text-slate-900">Email</p>
-                  <a href="mailto:chris@epiphany.ai" className="text-indigo-600 hover:underline">chris@epiphany.ai</a>
+                  <a href="mailto:Epiphany.AI529@outlook.com" className="text-indigo-600 hover:underline block">Epiphany.AI529@outlook.com</a>
+                  <a href="mailto:Cmgrillos529@gmail.com" className="text-indigo-600 hover:underline block">Cmgrillos529@gmail.com</a>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                  <Phone className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900">Phone</p>
+                  <a href="tel:9296274950" className="text-indigo-600 hover:underline">929-627-4950</a>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -56,6 +66,15 @@ export default function Contact() {
                 <div>
                   <p className="font-medium text-slate-900">Twitter / X</p>
                   <a href="https://x.com/cmgdank" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">@cmgdank</a>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                  <BookOpen className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900">Medium</p>
+                  <a href="https://medium.com/@cmgrillos529" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">@cmgrillos529</a>
                 </div>
               </div>
             </div>
