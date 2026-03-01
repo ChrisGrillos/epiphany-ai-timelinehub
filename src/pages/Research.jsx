@@ -32,6 +32,9 @@ export default function Research() {
   const [sortBy, setSortBy] = useState("newest");
   const [activeTag, setActiveTag] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showAI, setShowAI] = useState(false);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   useEffect(() => {
     base44.entities.Article.filter({ published: true }, "-created_date", 100)
