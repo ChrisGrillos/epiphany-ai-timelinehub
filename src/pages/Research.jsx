@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
+import { useInteractionTracking } from "@/hooks/useInteractionTracking";
 import { Brain, ExternalLink, Clock, Search, X, SlidersHorizontal, Sparkles, Upload, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ const SORT_OPTIONS = [
 ];
 
 export default function Research() {
+  const { trackEvent } = useInteractionTracking();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -91,6 +93,19 @@ export default function Research() {
     setDateTo("");
     setAiSearchIds(null);
     setAiSearchQuery("");
+  };
+
+  const handleTagClick = (tag) => {
+    trackEvent("tag_click", { tags: [tag] });
+    setActiveTag(tag);
+    setShowFilters(true);
+    setAiSearchIds(null);
+  };
+
+  const handleSearch = (q) => {
+    if (q.trim()) {
+      trackEvent("search_query", { search_query: q });
+    }
   };
 
   // AI search overrides normal filtering
@@ -272,7 +287,7 @@ export default function Research() {
           ) : (
             <div className="grid md:grid-cols-3 gap-8">
               {displayedArticles.map(a => (
-                <ArticleCard key={a.id} article={a} onTagClick={tag => { setActiveTag(tag); setShowFilters(true); setAiSearchIds(null); }} />
+                <ArticleCard key={a.id} article={a} onTagClick={handleTagClick} />
               ))}
             </div>
           )}
