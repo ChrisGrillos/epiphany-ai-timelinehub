@@ -84,7 +84,14 @@ export default function Research() {
     setSortBy("newest");
     setDateFrom("");
     setDateTo("");
+    setAiSearchIds(null);
+    setAiSearchQuery("");
   };
+
+  // AI search overrides normal filtering
+  const displayedArticles = aiSearchIds
+    ? aiSearchIds.map(id => articles.find(a => a.id === id)).filter(Boolean)
+    : filtered;
 
   return (
     <div className="min-h-screen bg-white">
