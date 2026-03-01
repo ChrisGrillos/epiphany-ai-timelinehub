@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ArticleAdmin from "../components/admin/ArticleAdmin";
-import AppAdmin from "../components/admin/AppAdmin";
-import InquiriesAdmin from "../components/admin/InquiriesAdmin";
+import ArticleAdmin from "@/components/admin/ArticleAdmin";
+import AppAdmin from "@/components/admin/AppAdmin";
+import InquiriesAdmin from "@/components/admin/InquiriesAdmin";
 import { Shield } from "lucide-react";
 
 export default function Admin() {
