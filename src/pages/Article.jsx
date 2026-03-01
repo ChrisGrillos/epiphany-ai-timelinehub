@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 import RelatedArticles, { trackRead } from "@/components/research/RelatedArticles";
 import ArticleSummarizer from "@/components/research/ArticleSummarizer";
+import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
 
 export default function Article() {
+  const { trackPageView, trackTimeOnPage } = useInteractionTracking();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,13 +22,21 @@ export default function Article() {
         .then(res => {
           const found = res[0] || null;
           setArticle(found);
-          if (found) trackRead(found.id, found.tags, found.category);
+          if (found) {
+            trackRead(found.id, found.tags, found.category);
+            trackPageView(found.id, found.title, 'Article', found.category, found.tags);
+          }
         })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!article) return;
+    return trackTimeOnPage(article.id, article.title, 'Article');
+  }, [article]);
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
