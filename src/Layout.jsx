@@ -26,9 +26,11 @@ export default function Layout({ children, currentPageName }) {
         <div className={`absolute inset-0 backdrop-blur-md bg-white/80 border-b border-slate-100/80 transition-opacity ${currentPageName === "Home" ? "opacity-0 hover:opacity-100" : "opacity-100"}`} />
         <nav className="relative max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to={createPageUrl("Home")} className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <Brain className="w-4 h-4 text-white" />
-            </div>
+            <img
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a483f1b63aa16c4fae1642/53213075a_Logo.png"
+              alt="Epiphany.AI"
+              className="w-9 h-9 object-contain"
+            />
             <span className="font-bold text-slate-900 text-lg">Epiphany<span className="text-indigo-600">.</span>AI</span>
           </Link>
 
