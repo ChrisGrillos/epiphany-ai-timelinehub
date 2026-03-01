@@ -42,10 +42,12 @@ export default function Admin() {
         <Tabs defaultValue="articles">
           <TabsList className="mb-8 bg-white border border-slate-100 shadow-sm">
             <TabsTrigger value="articles">Articles & Research</TabsTrigger>
+            <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="apps">Apps</TabsTrigger>
             <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           </TabsList>
           <TabsContent value="articles"><ArticleAdmin /></TabsContent>
+          <TabsContent value="timeline"><TimelineAdmin /></TabsContent>
           <TabsContent value="apps"><AppAdmin /></TabsContent>
           <TabsContent value="inquiries"><InquiriesAdmin /></TabsContent>
         </Tabs>
