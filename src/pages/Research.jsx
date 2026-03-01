@@ -168,6 +168,12 @@ export default function Research() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center gap-2">
+                <CalendarDays className="w-4 h-4 text-slate-400" />
+                <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 text-slate-600" />
+                <span className="text-slate-400 text-xs">—</span>
+                <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 text-slate-600" />
+              </div>
               {allTags.length > 0 && (
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm text-slate-500">Tag:</span>
