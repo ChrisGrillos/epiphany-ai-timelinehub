@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, Upload, Link, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const EMPTY = { title: "", excerpt: "", content: "", category: "Research", source: "written", medium_url: "", file_url: "", cover_image: "", published: false, featured: false, read_time: 5, tags: [] };
+const EMPTY = { title: "", author: "", excerpt: "", content: "", category: "Research", source: "written", medium_url: "", file_url: "", cover_image: "", published: false, featured: false, read_time: 5, tags: [] };
 
 export default function ArticleAdmin() {
   const [articles, setArticles] = useState([]);
