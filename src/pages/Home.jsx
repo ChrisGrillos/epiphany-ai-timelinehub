@@ -9,12 +9,15 @@ import { Badge } from "@/components/ui/badge";
 export default function Home() {
   const [featuredArticles, setFeaturedArticles] = useState([]);
   const [featuredApps, setFeaturedApps] = useState([]);
+  const [featuredCaseStudies, setFeaturedCaseStudies] = useState([]);
 
   useEffect(() => {
     base44.entities.Article.filter({ featured: true, published: true }, "-created_date", 3)
       .then(setFeaturedArticles).catch(() => {});
     base44.entities.App.filter({ featured: true, published: true }, "-created_date", 3)
       .then(setFeaturedApps).catch(() => {});
+    base44.entities.CaseStudy.filter({ featured: true, published: true }, "-created_date", 3)
+      .then(setFeaturedCaseStudies).catch(() => {});
   }, []);
 
   const services = [
@@ -123,6 +126,41 @@ export default function Home() {
                   <Badge className="mb-2 bg-indigo-50 text-indigo-600 border-0">{a.category}</Badge>
                   <h3 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">{a.title}</h3>
                   {a.excerpt && <p className="text-slate-500 text-sm mt-1 line-clamp-2">{a.excerpt}</p>}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Featured Case Studies */}
+      {featuredCaseStudies.length > 0 && (
+        <section className="py-24 px-6 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-end justify-between mb-12">
+              <div>
+                <p className="text-indigo-600 font-semibold tracking-widest text-sm uppercase mb-2">Client Success</p>
+                <h2 className="text-4xl font-bold text-slate-900">Case Studies</h2>
+              </div>
+              <Link to={createPageUrl("CaseStudies")} className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {featuredCaseStudies.map(cs => (
+                <Link key={cs.id} to={createPageUrl("CaseStudy") + `?id=${cs.id}`} className="group">
+                  <div className="aspect-video bg-slate-100 rounded-xl mb-4 overflow-hidden">
+                    {cs.cover_image ? (
+                      <img src={cs.cover_image} alt={cs.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-slate-100">
+                        <Brain className="w-12 h-12 text-indigo-300" />
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors mb-1">{cs.title}</h3>
+                  {cs.client && <p className="text-slate-500 text-sm mb-2">{cs.client}</p>}
+                  {cs.excerpt && <p className="text-slate-500 text-sm line-clamp-2">{cs.excerpt}</p>}
                 </Link>
               ))}
             </div>

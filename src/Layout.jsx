@@ -5,6 +5,7 @@ import { Brain, Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Research", page: "Research" },
+  { label: "Case Studies", page: "CaseStudies" },
   { label: "Timeline", page: "Timeline" },
   { label: "Apps", page: "Apps" },
   { label: "Contact", page: "Contact" },
