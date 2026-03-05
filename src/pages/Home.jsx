@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { ArrowRight, Brain, TrendingUp, Users, Lightbulb, ChevronDown } from "lucide-react";
+import { ArrowRight, Brain, TrendingUp, Users, Lightbulb, ChevronDown, Sparkles, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -229,6 +229,41 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Proof of Prescience Banner */}
+      <section className="py-20 px-6 bg-gradient-to-br from-indigo-950 via-slate-900 to-violet-950 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 30% 50%, #6366f1 0%, transparent 50%), radial-gradient(circle at 70% 30%, #8b5cf6 0%, transparent 40%)" }} />
+        <div className="relative max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center gap-10">
+            <div className="flex-1">
+              <p className="text-indigo-400 font-semibold tracking-widest text-sm uppercase mb-3">Documented Evidence</p>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Proof of Prescience</h2>
+              <p className="text-slate-300 text-lg mb-6 leading-relaxed">
+                Key AI innovations — persistent memory systems, multi-agent loop frameworks, and
+                natural-language-to-code agents — were conceived and publicly documented here
+                months before xAI, OpenAI, and Anthropic shipped them.
+              </p>
+              <Button asChild size="lg" className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-6 text-lg rounded-full">
+                <Link to={createPageUrl("ProofOfPrescience")}>
+                  View the Evidence <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+            </div>
+            <div className="flex-shrink-0 grid grid-cols-1 gap-4 w-full md:w-72">
+              {[
+                { icon: Brain, label: "Memory & Context Systems", color: "text-indigo-400" },
+                { icon: Zap, label: "Multi-Agent Loop Frameworks", color: "text-violet-400" },
+                { icon: Sparkles, label: "NL → Code Agents", color: "text-emerald-400" },
+              ].map(({ icon: Icon, label, color }) => (
+                <div key={label} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
+                  <Icon className={`w-5 h-5 shrink-0 ${color}`} />
+                  <span className="text-slate-200 text-sm font-medium">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* CTA */}
       <section className="py-24 px-6 bg-gradient-to-br from-slate-950 to-indigo-950">
