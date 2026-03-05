@@ -1,8 +1,10 @@
-**Welcome to your Base44 project** 
+# Epiphany AI Timeline Hub
+
+**Welcome to your Base44 project**
 
 **About**
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+View and Edit your app on [Base44.com](http://Base44.com)
 
 This project contains everything you need to run your app locally.
 
@@ -10,9 +12,9 @@ This project contains everything you need to run your app locally.
 
 Any change pushed to the repo will also be reflected in the Base44 Builder.
 
-**Prerequisites:** 
+**Prerequisites:**
 
-1. Clone the repository using the project's Git URL 
+1. Clone the repository using the project's Git URL
 2. Navigate to the project directory
 3. Install dependencies: `npm install`
 4. Create an `.env.local` file and set the right environment variables
@@ -26,7 +28,7 @@ VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
 VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
 ```
 
-Run the app: `npm run dev`
+5. Run the app: `npm run dev`
 
 **Publish your changes**
 
