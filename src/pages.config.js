@@ -56,6 +56,7 @@ import Research from './pages/Research';
 import Timeline from './pages/Timeline';
 import CaseStudies from './pages/CaseStudies';
 import CaseStudy from './pages/CaseStudy';
+import ProofOfPrescience from './pages/ProofOfPrescience';
 import __Layout from './Layout.jsx';
 
 
@@ -69,6 +70,7 @@ export const PAGES = {
     "Timeline": Timeline,
     "CaseStudies": CaseStudies,
     "CaseStudy": CaseStudy,
+    "ProofOfPrescience": ProofOfPrescience,
 }
 
 export const pagesConfig = {
