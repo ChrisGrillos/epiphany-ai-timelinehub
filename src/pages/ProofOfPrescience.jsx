@@ -113,8 +113,8 @@ export default function ProofOfPrescience() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Filter entries that are relevant to prescience (have prescience-related tags or all)
-  const prescience_entries = useMemo(() => {
+  // Filter entries relevant to each prescience claim category
+  const prescienceEntries = useMemo(() => {
     const prescienceTags = new Set([
       "memory", "context", "persistence", "multi-agent", "orchestration",
       "loops", "framework", "NL-to-code", "app-generation", "recursive",
@@ -123,34 +123,35 @@ export default function ProofOfPrescience() {
     ]);
 
     return entries.filter(e => {
-      // Include entries tagged with prescience-relevant keywords, or all if no tag filter
       const hasTags = e.tags?.some(t => prescienceTags.has(t.toLowerCase()));
       const matchSearch = !search ||
         e.title?.toLowerCase().includes(search.toLowerCase()) ||
         e.description?.toLowerCase().includes(search.toLowerCase()) ||
         e.tags?.some(t => t.toLowerCase().includes(search.toLowerCase()));
 
-      // Filter by selected claim
+      // When a specific claim is selected filter by its tags;
+      // when showing all, only surface entries tagged with prescience-related keywords
       const claimTags = activeClaimId === "all"
         ? null
         : CLAIMS.find(c => c.id === activeClaimId)?.tags ?? [];
-      const matchClaim = activeClaimId === "all" ||
-        e.tags?.some(t => claimTags.includes(t.toLowerCase()));
+      const matchClaim = activeClaimId === "all"
+        ? hasTags
+        : e.tags?.some(t => claimTags.includes(t.toLowerCase()));
 
       return matchSearch && matchClaim;
     }).sort((a, b) => new Date(b.entry_date) - new Date(a.entry_date));
   }, [entries, search, activeClaimId]);
 
-  // Group by year-month
+  // Group by YYYY-MM (first 7 chars of ISO date string)
   const grouped = useMemo(() => {
     const groups = {};
-    prescience_entries.forEach(e => {
+    prescienceEntries.forEach(e => {
       const key = e.entry_date ? e.entry_date.slice(0, 7) : "Unknown";
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
     return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
-  }, [prescience_entries]);
+  }, [prescienceEntries]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -344,7 +345,7 @@ export default function ProofOfPrescience() {
             <div className="space-y-4">
               {[1, 2, 3].map(i => <div key={i} className="h-36 bg-slate-200 rounded-2xl animate-pulse" />)}
             </div>
-          ) : prescience_entries.length === 0 ? (
+          ) : prescienceEntries.length === 0 ? (
             <EmptyState search={search} />
           ) : (
             <div className="relative">

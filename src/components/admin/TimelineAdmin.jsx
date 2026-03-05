@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, Upload, X, Image } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, X, Image, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format, parseISO } from "date-fns";
 
@@ -25,6 +25,10 @@ export default function TimelineAdmin() {
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
+  const [uploadWarning, setUploadWarning] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  const dropRef = useRef(null);
 
   const load = () => base44.entities.TimelineEntry.list("-entry_date", 200).then(setEntries);
   useEffect(() => { load(); }, []);
@@ -42,14 +46,35 @@ export default function TimelineAdmin() {
     if (confirm("Delete this entry?")) { await base44.entities.TimelineEntry.delete(id); load(); }
   };
 
-  const handleScreenshotUpload = async (e) => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+  const handleScreenshotUpload = async (files) => {
+    if (!files || !files.length) return;
     setUploading(true);
-    const uploaded = await Promise.all(files.map(f => base44.integrations.Core.UploadFile({ file: f })));
-    const urls = uploaded.map(r => r.file_url);
+    setUploadWarning("");
+    setUploadProgress({ done: 0, total: files.length });
+    const urls = [];
+    let failed = 0;
+    for (const f of Array.from(files)) {
+      try {
+        const res = await base44.integrations.Core.UploadFile({ file: f });
+        urls.push(res.file_url);
+      } catch (err) {
+        console.error(`Failed to upload "${f.name}":`, err);
+        failed++;
+      }
+      setUploadProgress(p => ({ ...p, done: p.done + 1 }));
+    }
+    if (failed > 0) setUploadWarning(`${failed} file${failed > 1 ? "s" : ""} failed to upload. Check the browser console for details.`);
     setEditing(prev => ({ ...prev, screenshot_urls: [...(prev.screenshot_urls || []), ...urls] }));
     setUploading(false);
+  };
+
+  const handleFileInput = (e) => handleScreenshotUpload(e.target.files);
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+    handleScreenshotUpload(files);
   };
 
   const removeScreenshot = (idx) => {
@@ -146,12 +171,37 @@ export default function TimelineAdmin() {
               </div>
               <div>
                 <Label className="mb-1.5 block">Screenshots</Label>
-                <label className="cursor-pointer block border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:border-indigo-300 transition-colors">
-                  <input type="file" accept="image/*" multiple onChange={handleScreenshotUpload} className="hidden" />
-                  <Upload className="w-5 h-5 text-slate-400 mx-auto mb-1" />
-                  <p className="text-sm text-slate-500">Upload screenshots (multiple allowed)</p>
-                </label>
-                {uploading && <p className="text-xs text-indigo-600 mt-1">Uploading...</p>}
+                {/* Drag-and-drop upload zone */}
+                <div
+                  ref={dropRef}
+                  onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-colors ${dragOver ? "border-indigo-500 bg-indigo-50" : "border-slate-200 hover:border-indigo-300"}`}
+                >
+                  <label className="cursor-pointer">
+                    <input type="file" accept="image/*" multiple onChange={handleFileInput} className="hidden" />
+                    {uploading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
+                        <p className="text-sm text-indigo-600 font-medium">
+                          Uploading {uploadProgress.done} / {uploadProgress.total}…
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
+                        <p className="text-sm text-slate-600 font-medium">Click to browse or drag &amp; drop</p>
+                        <p className="text-xs text-slate-400 mt-0.5">Supports multiple images at once — great for GPT chat export screenshots</p>
+                      </>
+                    )}
+                  </label>
+                </div>
+                {uploadWarning && (
+                  <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                    ⚠️ {uploadWarning}
+                  </p>
+                )}
                 {editing.screenshot_urls?.length > 0 && (
                   <div className="flex gap-2 mt-3 flex-wrap">
                     {editing.screenshot_urls.map((url, idx) => (
