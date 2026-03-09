@@ -9,6 +9,98 @@ import RelatedArticles, { trackRead } from "@/components/research/RelatedArticle
 import ArticleSummarizer from "@/components/research/ArticleSummarizer";
 import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
 
+// Determines if a URL points to a Word document
+function isWordDoc(url) {
+  if (!url) return false;
+  const lower = url.toLowerCase().split("?")[0];
+  return lower.endsWith(".docx") || lower.endsWith(".doc");
+}
+
+// Determines if a URL points to a PDF
+function isPdf(url) {
+  if (!url) return false;
+  const lower = url.toLowerCase().split("?")[0];
+  return lower.endsWith(".pdf");
+}
+
+// Renders a Word or PDF document inline in the browser without forcing a download
+function DocumentViewer({ fileUrl, title }) {
+  const [viewerError, setViewerError] = useState(false);
+
+  if (isWordDoc(fileUrl)) {
+    // Google Docs Viewer renders Word documents in-browser without downloading
+    const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+    return (
+      <div className="space-y-4">
+        {!viewerError ? (
+          <iframe
+            src={viewerUrl}
+            title={title}
+            className="w-full rounded-xl border border-slate-200"
+            style={{ height: "80vh", minHeight: 500 }}
+            onError={() => setViewerError(true)}
+            allowFullScreen
+          />
+        ) : (
+          <div className="text-center py-8 text-slate-500">
+            <p className="mb-4">Unable to load document preview.</p>
+          </div>
+        )}
+        <div className="text-center">
+          <a
+            href={`https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-500 text-sm underline underline-offset-2"
+          >
+            <ExternalLink className="w-3.5 h-3.5" /> Open in Google Docs Viewer
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (isPdf(fileUrl)) {
+    // PDFs can be embedded directly via <object> which browsers display natively
+    return (
+      <div className="space-y-4">
+        <object
+          data={fileUrl}
+          type="application/pdf"
+          className="w-full rounded-xl border border-slate-200"
+          style={{ height: "80vh", minHeight: 500 }}
+        >
+          <div className="text-center py-12">
+            <p className="text-slate-500 mb-4">Your browser cannot display this PDF inline.</p>
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-500 transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" /> Open PDF
+            </a>
+          </div>
+        </object>
+      </div>
+    );
+  }
+
+  // Unknown file type — show a view link (opens in new tab, no forced download)
+  return (
+    <div className="text-center py-12">
+      <a
+        href={fileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-500 transition-colors"
+      >
+        <ExternalLink className="w-4 h-4" /> View Full Document
+      </a>
+    </div>
+  );
+}
+
 export default function Article() {
   const { trackPageView, trackTimeOnPage } = useInteractionTracking();
   const [article, setArticle] = useState(null);
@@ -92,11 +184,7 @@ export default function Article() {
             <ReactMarkdown>{article.content}</ReactMarkdown>
           </div>
         ) : article.file_url ? (
-          <div className="text-center py-12">
-            <a href={article.file_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-500 transition-colors">
-              <ExternalLink className="w-4 h-4" /> View Full Document
-            </a>
-          </div>
+          <DocumentViewer fileUrl={article.file_url} title={article.title} />
         ) : null}
 
         {/* AI Summarizer */}

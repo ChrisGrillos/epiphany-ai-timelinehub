@@ -73,7 +73,16 @@ function parseMediumRSS(xmlText) {
 }
 
 const MEDIUM_RSS_URL = "https://medium.com/feed/@cmgrillos529";
-const CORS_PROXY = "https://api.allorigins.win/get?url=";
+
+// Multiple CORS proxies to try in sequence (allorigins caches aggressively)
+const CORS_PROXIES = [
+  (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}&t=${Date.now()}`,
+  (url) => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+  (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
+
+// Medium's standard RSS feed is capped at this many articles
+const MEDIUM_RSS_ARTICLE_LIMIT = 10;
 
 export default function MediumBulkImporter({ onImported }) {
   const [rssUrl, setRssUrl] = useState(MEDIUM_RSS_URL);
@@ -88,21 +97,36 @@ export default function MediumBulkImporter({ onImported }) {
   const [existingUrls, setExistingUrls] = useState(new Set());
   const [showAll, setShowAll] = useState(false);
 
-  // Fetch via CORS proxy
+  // Fetch via CORS proxy, trying multiple proxies in sequence
   const fetchFeed = async () => {
     setFetching(true); setFetchError(""); setParsed(null); setImportResult(null);
-    try {
-      const proxied = `${CORS_PROXY}${encodeURIComponent(rssUrl)}`;
-      const res = await fetch(proxied);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-      const xml = json.contents;
-      handleXml(xml);
-    } catch (err) {
-      setFetchError(`Could not auto-fetch feed: ${err.message}. Try the "Paste XML" option below.`);
-    } finally {
-      setFetching(false);
+    let lastError = null;
+    for (const makeProxyUrl of CORS_PROXIES) {
+      try {
+        const proxied = makeProxyUrl(rssUrl);
+        const res = await fetch(proxied, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        // allorigins wraps the response in JSON; corsproxy.io returns raw XML
+        let xml = text;
+        try {
+          const json = JSON.parse(text);
+          if (json.contents) xml = json.contents;
+        } catch (_) { /* not JSON, treat as raw XML */ }
+        handleXml(xml);
+        setFetching(false);
+        return;
+      } catch (err) {
+        lastError = err;
+      }
     }
+    setFetchError(
+      `Could not auto-fetch feed: ${lastError?.message}. ` +
+      "Medium's RSS feed returns only the " + MEDIUM_RSS_ARTICLE_LIMIT + " most recent articles. " +
+      "To import all articles, use the \"Paste XML\" option: export your Medium data from " +
+      "Medium Settings → Security & apps → Export your data, then paste the RSS XML below."
+    );
+    setFetching(false);
   };
 
   const handleXml = async (xml) => {
@@ -173,7 +197,7 @@ export default function MediumBulkImporter({ onImported }) {
         </div>
         <div>
           <h3 className="font-semibold text-slate-900">Bulk Import from Medium RSS</h3>
-          <p className="text-xs text-slate-500">Import all 67+ Medium articles at once</p>
+          <p className="text-xs text-slate-500">Import Medium articles (auto-fetch gets ~{MEDIUM_RSS_ARTICLE_LIMIT} latest; paste XML to import all)</p>
         </div>
       </div>
 
@@ -198,7 +222,9 @@ export default function MediumBulkImporter({ onImported }) {
             </Button>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Your feed is pre-filled. Click "Fetch Feed" to load all your Medium articles automatically.
+            Your feed is pre-filled. Click "Fetch Feed" to load your latest Medium articles.{" "}
+            <strong>Note:</strong> Medium's RSS feed only returns the {MEDIUM_RSS_ARTICLE_LIMIT} most recent articles.
+            To import all your articles, use the "Paste XML" option below with your full RSS export.
           </p>
         </div>
 
@@ -214,8 +240,14 @@ export default function MediumBulkImporter({ onImported }) {
           {showPaste && (
             <div className="mt-2 space-y-2">
               <p className="text-xs text-slate-500">
-                Open <a href={rssUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">{rssUrl}</a> in
-                your browser, select all (Ctrl+A), copy, and paste below:
+                <strong>To import all your articles:</strong> Go to Medium →{" "}
+                <a href="https://medium.com/me/settings/security" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                  Settings → Security & Apps → Export your data
+                </a>{" "}
+                → download the ZIP, open <code className="bg-slate-100 px-1 rounded">posts/</code> folder,
+                then combine all post XML or use the RSS URL{" "}
+                <a href={rssUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">{rssUrl}</a>{" "}
+                (limited to ~10 recent posts). Paste the full RSS XML below:
               </p>
               <textarea
                 className="w-full h-36 text-xs font-mono border border-slate-200 rounded-xl p-3 bg-white resize-y"
