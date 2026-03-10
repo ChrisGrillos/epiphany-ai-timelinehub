@@ -9,51 +9,102 @@ import RelatedArticles, { trackRead } from "@/components/research/RelatedArticle
 import ArticleSummarizer from "@/components/research/ArticleSummarizer";
 import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
 
-// Determines if a URL points to a Word document
+// Determines if a URL points to a Word document.
+// Checks for .doc/.docx as a file extension (before ?, #, / or end of string)
+// to handle CDN URLs while avoiding false positives from directory names like /docs/.
 function isWordDoc(url) {
   if (!url) return false;
-  const lower = url.toLowerCase().split("?")[0];
-  return lower.endsWith(".docx") || lower.endsWith(".doc");
+  return /\.docx?(?:[?#/]|$)/i.test(url);
 }
 
-// Determines if a URL points to a PDF
+// Determines if a URL points to a PDF.
+// Checks for .pdf as a file extension to avoid false positives from path segments.
 function isPdf(url) {
   if (!url) return false;
-  const lower = url.toLowerCase().split("?")[0];
-  return lower.endsWith(".pdf");
+  return /\.pdf(?:[?#/]|$)/i.test(url);
 }
 
-// Renders a Word or PDF document inline in the browser without forcing a download
-function DocumentViewer({ fileUrl, title }) {
-  const [viewerError, setViewerError] = useState(false);
+// Renders a Word or PDF document inline in the browser without forcing a download.
+// assumeWordDoc: set true for uploaded files whose CDN URL may not include the extension.
+function DocumentViewer({ fileUrl, title, assumeWordDoc = false }) {
+  // "office" → Microsoft Office Online (primary, most reliable)
+  // "google" → Google Docs Viewer (secondary fallback)
+  // "none"   → both viewers failed; show manual options only
+  const [viewer, setViewer] = useState("office");
 
-  if (isWordDoc(fileUrl)) {
-    // Google Docs Viewer renders Word documents in-browser without downloading
-    const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+  const wordDoc = isWordDoc(fileUrl) || assumeWordDoc;
+
+  if (wordDoc) {
+    const officeUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+    const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+    const viewerSrc = viewer === "office" ? officeUrl : googleUrl;
+
+    const switchToNext = () => {
+      if (viewer === "office") setViewer("google");
+      else setViewer("none");
+    };
+
     return (
-      <div className="space-y-4">
-        {!viewerError ? (
+      <div className="space-y-3">
+        {viewer !== "none" ? (
           <iframe
-            src={viewerUrl}
+            key={viewer}
+            src={viewerSrc}
             title={title}
             className="w-full rounded-xl border border-slate-200"
             style={{ height: "80vh", minHeight: 500 }}
-            onError={() => setViewerError(true)}
+            onError={switchToNext}
             allowFullScreen
           />
         ) : (
-          <div className="text-center py-8 text-slate-500">
-            <p className="mb-4">Unable to load document preview.</p>
+          <div className="text-center py-10 bg-slate-50 rounded-xl text-slate-500">
+            <p className="mb-2 font-medium">Document preview is unavailable in this browser.</p>
+            <p className="text-sm mb-5">Try opening it directly in one of the viewers below.</p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={officeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-full hover:bg-indigo-500 transition-colors text-sm"
+              >
+                <ExternalLink className="w-4 h-4" /> Open in Office Online
+              </a>
+              <a
+                href={`https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border border-slate-300 text-slate-700 px-5 py-2.5 rounded-full hover:bg-slate-100 transition-colors text-sm"
+              >
+                <ExternalLink className="w-4 h-4" /> Open in Google Docs
+              </a>
+            </div>
           </div>
         )}
-        <div className="text-center">
+
+        {/* Viewer switcher & download */}
+        <div className="flex items-center justify-center gap-3 text-xs text-slate-400">
+          <span>View with:</span>
+          <button
+            onClick={() => setViewer("office")}
+            className={`hover:text-slate-700 transition-colors ${viewer === "office" ? "text-indigo-600 font-semibold" : ""}`}
+          >
+            Office Online
+          </button>
+          <span className="text-slate-200">|</span>
+          <button
+            onClick={() => setViewer("google")}
+            className={`hover:text-slate-700 transition-colors ${viewer === "google" ? "text-indigo-600 font-semibold" : ""}`}
+          >
+            Google Docs
+          </button>
+          <span className="text-slate-200">|</span>
           <a
-            href={`https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}`}
+            href={fileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-500 text-sm underline underline-offset-2"
+            className="inline-flex items-center gap-1 hover:text-slate-700 transition-colors"
           >
-            <ExternalLink className="w-3.5 h-3.5" /> Open in Google Docs Viewer
+            <ExternalLink className="w-3 h-3" /> Download
           </a>
         </div>
       </div>
@@ -86,7 +137,7 @@ function DocumentViewer({ fileUrl, title }) {
     );
   }
 
-  // Unknown file type — show a view link (opens in new tab, no forced download)
+  // Unknown file type — open in new tab (avoids triggering a browser download dialog)
   return (
     <div className="text-center py-12">
       <a
@@ -184,7 +235,11 @@ export default function Article() {
             <ReactMarkdown>{article.content}</ReactMarkdown>
           </div>
         ) : article.file_url ? (
-          <DocumentViewer fileUrl={article.file_url} title={article.title} />
+          <DocumentViewer
+            fileUrl={article.file_url}
+            title={article.title}
+            assumeWordDoc={article.source === "upload" && !isPdf(article.file_url)}
+          />
         ) : null}
 
         {/* AI Summarizer */}
