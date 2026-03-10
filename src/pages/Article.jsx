@@ -31,6 +31,7 @@ function DocumentViewer({ fileUrl, title, assumeWordDoc = false }) {
   // "google" → Google Docs Viewer (secondary fallback)
   // "none"   → both viewers failed; show manual options only
   const [viewer, setViewer] = useState("office");
+  const [iframeLoading, setIframeLoading] = useState(true);
 
   const wordDoc = isWordDoc(fileUrl) || assumeWordDoc;
 
@@ -40,22 +41,32 @@ function DocumentViewer({ fileUrl, title, assumeWordDoc = false }) {
     const viewerSrc = viewer === "office" ? officeUrl : googleUrl;
 
     const switchToNext = () => {
-      if (viewer === "office") setViewer("google");
+      if (viewer === "office") { setViewer("google"); setIframeLoading(true); }
       else setViewer("none");
     };
+
+    const switchTo = (v) => { setViewer(v); setIframeLoading(true); };
 
     return (
       <div className="space-y-3">
         {viewer !== "none" ? (
-          <iframe
-            key={viewer}
-            src={viewerSrc}
-            title={title}
-            className="w-full rounded-xl border border-slate-200"
-            style={{ height: "80vh", minHeight: 500 }}
-            onError={switchToNext}
-            allowFullScreen
-          />
+          <div className="relative rounded-xl overflow-hidden">
+            {iframeLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-50 z-10">
+                <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+            <iframe
+              key={viewer}
+              src={viewerSrc}
+              title={title}
+              className="w-full rounded-xl border border-slate-200"
+              style={{ height: "80vh", minHeight: 500 }}
+              onError={switchToNext}
+              onLoad={() => setIframeLoading(false)}
+              allowFullScreen
+            />
+          </div>
         ) : (
           <div className="text-center py-10 bg-slate-50 rounded-xl text-slate-500">
             <p className="mb-2 font-medium">Document preview is unavailable in this browser.</p>
@@ -85,14 +96,14 @@ function DocumentViewer({ fileUrl, title, assumeWordDoc = false }) {
         <div className="flex items-center justify-center gap-3 text-xs text-slate-400">
           <span>View with:</span>
           <button
-            onClick={() => setViewer("office")}
+            onClick={() => switchTo("office")}
             className={`hover:text-slate-700 transition-colors ${viewer === "office" ? "text-indigo-600 font-semibold" : ""}`}
           >
             Office Online
           </button>
           <span className="text-slate-200">|</span>
           <button
-            onClick={() => setViewer("google")}
+            onClick={() => switchTo("google")}
             className={`hover:text-slate-700 transition-colors ${viewer === "google" ? "text-indigo-600 font-semibold" : ""}`}
           >
             Google Docs
