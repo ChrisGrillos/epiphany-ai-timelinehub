@@ -57,6 +57,7 @@ import Timeline from './pages/Timeline';
 import CaseStudies from './pages/CaseStudies';
 import CaseStudy from './pages/CaseStudy';
 import ProofOfPrescience from './pages/ProofOfPrescience';
+import ScreenshotOrganizer from './pages/ScreenshotOrganizer';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +72,7 @@ export const PAGES = {
     "CaseStudies": CaseStudies,
     "CaseStudy": CaseStudy,
     "ProofOfPrescience": ProofOfPrescience,
+    "ScreenshotOrganizer": ScreenshotOrganizer,
 }
 
 export const pagesConfig = {

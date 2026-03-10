@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { label: "Case Studies", page: "CaseStudies" },
   { label: "Timeline", page: "Timeline" },
   { label: "Prescience", page: "ProofOfPrescience" },
+  { label: "Screenshots", page: "ScreenshotOrganizer" },
   { label: "Apps", page: "Apps" },
   { label: "Contact", page: "Contact" },
 ];
