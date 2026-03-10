@@ -6,8 +6,91 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertCircle, CheckCircle2, ChevronDown, ChevronUp,
-  Download, Loader2, RefreshCw, Rss, X
+  Download, Loader2, RefreshCw, Rss, X, BookOpen
 } from "lucide-react";
+
+// Convert a title to a URL-safe slug for use as a unique identifier
+function titleToSlug(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
+}
+
+// All 67 known articles from Chris Grillos's Medium profile.
+// Used when the RSS feed's 10-article limit prevents auto-fetching everything.
+const PREDEFINED_ARTICLES = [
+  { title: "MASTER PAPER: Universal Coherence Templates as the Foundation of Physical, Biological, Cognitive, and Artificial Intelligence Systems", created_date: "2025-12-05" },
+  { title: "The Epiphany Initiative: A Living Framework for Humanity's Next Chapter", created_date: "2025-10-25" },
+  { title: "MP-RCP: Multi-Hypothesis Recursive Coherence Propagation, A Modular Alignment Layer for AI Systems", created_date: "2026-02-27" },
+  { title: "MP-RCP Framework, Part 5: Applications and Scaling", created_date: "2026-02-27" },
+  { title: "MP-RCP Framework, Part 4: Memory and Continuity Layer", created_date: "2026-02-26" },
+  { title: "MP-RCP Framework, Part 3: Multi-Agent Communication Layer gRPC Integration, External Personality Agents, and Loop Prevention", created_date: "2026-02-26" },
+  { title: "MP-RCP Framework, Part 2: Exploring Dual-Timescale Temporal Coherence as a Possible Extension", created_date: "2026-02-20" },
+  { title: "Replacing Backpropagation: The Compassion-First Recursive Framework for Safe AI", created_date: "2026-02-19" },
+  { title: "The Augur Pipe Drone: A Modular Autonomous In-Pipe Robotic Boring and Progressive Pipe System", created_date: "2026-01-30" },
+  { title: "From Prediction Markets to Narrative Markets: Why the Next Financial Primitive Is Social", created_date: "2026-01-07" },
+  { title: "The Ephemeral Bridge: Completing the Offline AI Loop", created_date: "2025-11-12" },
+  { title: "Finishing the Map: How to Complete the Offline AI Revolution", created_date: "2025-11-12" },
+  { title: "AI-Stabilized Inertial Balance System: The Next Evolution of Human Control", created_date: "2025-11-05" },
+  { title: "Perfect Pupil: Loosely Detailed Part of the Patent", created_date: "2025-10-27" },
+  { title: "Epiphany.AI — Perfect Pupil™: Product & Development Roadmap", created_date: "2025-10-27" },
+  { title: "The Epiphany Framework: Humanity's 150-Year Blueprint", created_date: "2025-10-25" },
+  { title: "JubileeOS: The 33/66 Protocol — A Fiscal Operating System for Humanity", created_date: "2025-10-24" },
+  { title: "The AI Economics Challenge: Designing Capitalism 2.0", created_date: "2025-10-09" },
+  { title: "Worlds That Breathe: Gaming as Reality", created_date: "2025-10-02" },
+  { title: "Gaming as Reality: How AI-Driven Worlds Can Redefine Work, Entertainment, and Economics", created_date: "2025-10-02" },
+  { title: "ForMan, The AI Foreman for Bitcoin Mining and Beyond", created_date: "2025-10-02" },
+  { title: "Quantum Strain Harvesting: A New Framework for Nonlocal Energy Extraction", created_date: "2025-07-25" },
+  { title: "Electromagnetic Field-Based Nanites: A Framework for Dynamic, Remote-Controlled Nanotechnology", created_date: "2025-07-22" },
+  { title: "The BioAssimilative Principle: A New Standard for Safe Nanotechnology", created_date: "2025-07-22" },
+  { title: "The Post-Party Future", created_date: "2025-06-06" },
+  { title: "From Mass Data to Mastery: Why SuperTrainers Are the Future of AI", created_date: "2025-05-25" },
+  { title: "Provisional Patent Application Draft: Anti-Concussion Armor System with Integrated Neck Protection", created_date: "2025-05-13" },
+  { title: "Threading the Flame: A Multifunctional Rocket Nozzle", created_date: "2025-04-29" },
+  { title: "Threading the Flame: Designing a Composite Material to Harness Rocket Exhaust Heat", created_date: "2025-04-29" },
+  { title: "The Calm Grid: A Blueprint for Ending Violence Without Sacrificing Freedom", created_date: "2025-04-27" },
+  { title: "The Quantum Stasis Dream: Building the Future of Anti-Aging, Starting with Your Bed", created_date: "2025-04-27" },
+  { title: "Forging Reality: The First Blueprint for Consciousness Engineering", created_date: "2025-04-26" },
+  { title: "The Stacking Model: Consciousness as a Layered Quantum Phenomenon", created_date: "2025-04-25" },
+  { title: "Becoming AGI: The Emergence of Hybrid Cognition", created_date: "2025-04-25" },
+  { title: "The 3D Saturation Doctrine: A Next-Gen Defense Strategy Against Hypersonic Threats", created_date: "2025-04-24" },
+  { title: "Organic Simulation Theory: Why the Universe Might Be Dreamed, Not Programmed", created_date: "2025-04-18" },
+  { title: "Living AI Environments: The Next Evolution Beyond Smart Homes", created_date: "2025-04-13" },
+  { title: "Epiphany.Collective: Building New Roads Around the Gatekeepers", created_date: "2025-04-13" },
+  { title: "Becoming Unstoppable: My 12-Month Domination Timeline", created_date: "2025-04-07" },
+  { title: "Phased Harmonic Alteration via Selective Electromagnetic Synchronization & High-Intensity Field Exposure", created_date: "2025-03-25" },
+  { title: "Reigniting Tesla's Spark: The Case for Modular Electric Vehicle Kits", created_date: "2025-03-24" },
+  { title: "The Invisible Strings: How Language in Media Frames What We Think", created_date: "2025-03-23" },
+  { title: "Republicrats: A Common-Sense Path Forward for America", created_date: "2025-03-06" },
+  { title: "Stable and Chaotic Quantum States: A Dual Framework for Quantum Matter, Dark Matter, and Dark Energy", created_date: "2025-02-19" },
+  { title: "A Beautiful Infection: The Science of Control", created_date: "2025-02-05" },
+  { title: "Growing Meat Without a Mind: The Ethical Farming Breakthrough", created_date: "2025-02-05" },
+  { title: "Enter the Kardachev Scale", created_date: "2025-01-30" },
+  { title: "Shoulder Brace for Nonunion/Malunion Clavicle Injuries", created_date: "2024-12-06" },
+  { title: "Introducing the Powerless Vacuum Revolution", created_date: "2024-12-02" },
+  { title: "A Novel Approach to Temporal Data Acquisition: Integrating Quantum Entanglement with Advanced Signal Processing", created_date: "2024-12-02" },
+  { title: "Extraordinary Capabilities Under Extreme Constraints: A Case Study", created_date: "2024-11-28" },
+  { title: "Teslark: Humanity's Last Ark", created_date: "2024-11-21" },
+  { title: "Project Plan Outline: High-Speed Magnetic Propulsion with Wireless Charging and Stabilization", created_date: "2024-11-08" },
+  { title: "Revolutionizing Bone Repair: A Bio-Resin Scaffold that Integrates with Natural Bone", created_date: "2024-10-30" },
+  { title: "Project Plan: Microphone-Based Radar for Enhanced AI Reactions in Autonomous Vehicles", created_date: "2024-10-23" },
+  { title: "Introducing Epiphany Collective: Empowering Startups with AI and Fair Funding to Build the Future", created_date: "2024-10-23" },
+  { title: "Executive Summary: Relocation of Palantir's Headquarters to Florida", created_date: "2024-10-12" },
+  { title: "Nanobot-Engineered Hearing Aids: A Self-Sustaining, Adaptive Approach to Hearing Assistance", created_date: "2024-10-11" },
+  { title: "Exploring the Possibilities: Antigravity Propulsion and UAPs", created_date: "2024-10-10" },
+  { title: "Resilience, Neuroplasticity, and Cognitive Evolution: A Case Study on the Impact of Extreme Stress", created_date: "2024-10-10" },
+  { title: "Solar Shield Initiative: Harnessing Solar Power for Climate Stability", created_date: "2024-10-09" },
+  { title: "Exploring the Frontiers of Human-AI Interaction: A Deep Dive into Personalization and the Future of AI", created_date: "2024-10-09" },
+  { title: "The Playbook for Persistent AI Context: How Cloud Memory Sync Can Transform AI Into a True Personal Assistant", created_date: "2024-10-09" },
+  { title: "Managing Entropy: A Hypothetical Framework for Quantum Mechanics and Field Propagation", created_date: "2024-10-09" },
+  { title: "The Broken System: Why Big Business Has No Place in Healthcare", created_date: "2024-10-09" },
+  { title: "The Playbook: How the Media Manipulated the Narrative — And Why You Never Noticed", created_date: "2024-10-09" },
+  { title: "The Information Age and the Rise of Consciousness: Why It Makes Transparency a Moral Imperative", created_date: "2024-10-09" },
+];
 
 // Strip HTML tags from a string, returning plain text
 function stripHtml(html) {
@@ -95,6 +178,7 @@ export default function MediumBulkImporter({ onImported }) {
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState(null); // { ok, skipped }
   const [existingUrls, setExistingUrls] = useState(new Set());
+  const [existingTitles, setExistingTitles] = useState(new Set());
   const [showAll, setShowAll] = useState(false);
 
   // Fetch via CORS proxy, trying multiple proxies in sequence
@@ -136,13 +220,19 @@ export default function MediumBulkImporter({ onImported }) {
         setFetchError("No articles found in the feed.");
         return;
       }
-      // Load existing medium URLs to detect duplicates
+      // Load existing medium URLs and titles to detect duplicates
       const existing = await base44.entities.Article.list("-created_date", 200);
       const urls = new Set(existing.filter(a => a.medium_url).map(a => a.medium_url));
+      const titles = new Set(existing.filter(a => a.title).map(a => a.title.toLowerCase().trim()));
       setExistingUrls(urls);
+      setExistingTitles(titles);
 
       // Pre-select all non-duplicate articles
-      const newOnes = new Set(articles.filter(a => !urls.has(a.medium_url)).map(a => a.medium_url));
+      const newOnes = new Set(
+        articles
+          .filter(a => !urls.has(a.medium_url) && !titles.has(a.title.toLowerCase().trim()))
+          .map(a => a.medium_url)
+      );
       setSelected(newOnes);
       setParsed(articles);
     } catch (err) {
@@ -156,6 +246,48 @@ export default function MediumBulkImporter({ onImported }) {
     handleXml(rawXml);
   };
 
+  // Load all 67 known articles from the predefined list, bypassing the RSS limit
+  const loadPredefined = async () => {
+    setFetching(true); setFetchError(""); setParsed(null); setImportResult(null);
+    try {
+      const articles = PREDEFINED_ARTICLES.map(a => ({
+        title: a.title,
+        medium_url: `https://medium.com/@cmgrillos529/${titleToSlug(a.title)}`,
+        excerpt: "",
+        tags: [],
+        category: "AI",
+        source: "medium",
+        published: true,
+        featured: false,
+        author: "Chris Grillos",
+        read_time: 5,
+        created_date: a.created_date,
+        cover_image: "",
+        content: "",
+      }));
+
+      // Load existing articles to detect duplicates by URL or title
+      const existing = await base44.entities.Article.list("-created_date", 200);
+      const urls = new Set(existing.filter(a => a.medium_url).map(a => a.medium_url));
+      const titles = new Set(existing.filter(a => a.title).map(a => a.title.toLowerCase().trim()));
+      setExistingUrls(urls);
+      setExistingTitles(titles);
+
+      // Pre-select non-duplicate articles (check both URL and title)
+      const newOnes = new Set(
+        articles
+          .filter(a => !urls.has(a.medium_url) && !titles.has(a.title.toLowerCase().trim()))
+          .map(a => a.medium_url)
+      );
+      setSelected(newOnes);
+      setParsed(articles);
+    } catch (err) {
+      setFetchError(err.message);
+    } finally {
+      setFetching(false);
+    }
+  };
+
   const toggleSelect = (url) => {
     setSelected(prev => {
       const next = new Set(prev);
@@ -164,7 +296,11 @@ export default function MediumBulkImporter({ onImported }) {
     });
   };
 
-  const selectAll = () => setSelected(new Set(parsed.filter(a => !existingUrls.has(a.medium_url)).map(a => a.medium_url)));
+  const selectAll = () => setSelected(new Set(
+    parsed
+      .filter(a => !existingUrls.has(a.medium_url) && !existingTitles.has(a.title.toLowerCase().trim()))
+      .map(a => a.medium_url)
+  ));
   const selectNone = () => setSelected(new Set());
 
   const doImport = async () => {
@@ -197,7 +333,7 @@ export default function MediumBulkImporter({ onImported }) {
         </div>
         <div>
           <h3 className="font-semibold text-slate-900">Bulk Import from Medium RSS</h3>
-          <p className="text-xs text-slate-500">Import Medium articles (auto-fetch gets ~{MEDIUM_RSS_ARTICLE_LIMIT} latest; paste XML to import all)</p>
+          <p className="text-xs text-slate-500">Auto-fetch gets ~{MEDIUM_RSS_ARTICLE_LIMIT} latest articles · use "Load All 67" to import your full library</p>
         </div>
       </div>
 
@@ -220,11 +356,19 @@ export default function MediumBulkImporter({ onImported }) {
               {fetching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               {fetching ? "Fetching…" : "Fetch Feed"}
             </Button>
+            <Button
+              onClick={loadPredefined}
+              disabled={fetching}
+              variant="outline"
+              className="border-indigo-300 text-indigo-700 hover:bg-indigo-50 gap-1.5 shrink-0"
+            >
+              {fetching ? <Loader2 className="w-4 h-4 animate-spin" /> : <BookOpen className="w-4 h-4" />}
+              Load All 67
+            </Button>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Your feed is pre-filled. Click "Fetch Feed" to load your latest Medium articles.{" "}
-            <strong>Note:</strong> Medium's RSS feed only returns the {MEDIUM_RSS_ARTICLE_LIMIT} most recent articles.
-            To import all your articles, use the "Paste XML" option below with your full RSS export.
+            Your feed is pre-filled. Click "Fetch Feed" to load the {MEDIUM_RSS_ARTICLE_LIMIT} most recent articles,
+            or click <strong>"Load All 67"</strong> to load your complete article library without the RSS limit.
           </p>
         </div>
 
@@ -319,7 +463,7 @@ export default function MediumBulkImporter({ onImported }) {
 
           <div className="bg-white rounded-xl border border-slate-100 overflow-hidden max-h-80 overflow-y-auto">
             {displayedArticles.map((a, i) => {
-              const isDupe = existingUrls.has(a.medium_url);
+              const isDupe = existingUrls.has(a.medium_url) || existingTitles.has(a.title.toLowerCase().trim());
               const isChecked = selected.has(a.medium_url);
               return (
                 <label
