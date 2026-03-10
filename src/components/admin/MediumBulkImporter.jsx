@@ -69,7 +69,7 @@ const PREDEFINED_ARTICLES = [
   { title: "Stable and Chaotic Quantum States: A Dual Framework for Quantum Matter, Dark Matter, and Dark Energy", created_date: "2025-02-19" },
   { title: "A Beautiful Infection: The Science of Control", created_date: "2025-02-05" },
   { title: "Growing Meat Without a Mind: The Ethical Farming Breakthrough", created_date: "2025-02-05" },
-  { title: "Enter the Kardachev Scale", created_date: "2025-01-30" },
+  { title: "Enter the Kardashev Scale", created_date: "2025-01-30" },
   { title: "Shoulder Brace for Nonunion/Malunion Clavicle Injuries", created_date: "2024-12-06" },
   { title: "Introducing the Powerless Vacuum Revolution", created_date: "2024-12-02" },
   { title: "A Novel Approach to Temporal Data Acquisition: Integrating Quantum Entanglement with Advanced Signal Processing", created_date: "2024-12-02" },
