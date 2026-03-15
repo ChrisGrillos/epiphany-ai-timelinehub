@@ -6,7 +6,7 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: frame-ancestors 'self'; frame-src 'self' https://view.officeapps.live.com https://docs.google.com https://*.google.com
+  Content-Security-Policy: frame-ancestors 'self'; frame-src 'self' https://view.officeapps.live.com https://docs.google.com
 
 # Static assets — long cache
 /assets/*
