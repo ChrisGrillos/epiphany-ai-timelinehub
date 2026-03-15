@@ -249,7 +249,7 @@ export default function Article() {
           <DocumentViewer
             fileUrl={article.file_url}
             title={article.title}
-            assumeWordDoc={article.source === "upload" && !isPdf(article.file_url)}
+            assumeWordDoc={!isPdf(article.file_url)}
           />
         ) : null}
 
