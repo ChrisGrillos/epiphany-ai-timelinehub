@@ -28,17 +28,17 @@ function isPdf(url) {
 }
 
 // Ensures a file URL is absolute. Relative paths are resolved against the
-// Base44 app origin so that external viewers (Office Online, Google Docs)
-// can fetch the document even when the site is served from Cloudflare.
+// current origin as a best-effort fallback. Base44 normally returns absolute
+// CDN URLs, but if a relative path slips through this prevents the external
+// viewers (Office Online, Google Docs) from receiving a bare path.
 function toAbsoluteUrl(url) {
   if (!url) return url;
   // Already absolute
   if (/^https?:\/\//i.test(url)) return url;
   // Protocol-relative
   if (url.startsWith("//")) return `https:${url}`;
-  // Relative path — resolve against current origin as a fallback.
-  // In most cases Base44 returns absolute CDN URLs, but this guards against
-  // edge cases where a relative path slips through.
+  // Relative path — resolve against the current origin. This is a safety net;
+  // in practice file_url values from Base44 are absolute CDN URLs.
   try {
     return new URL(url, window.location.origin).href;
   } catch {
