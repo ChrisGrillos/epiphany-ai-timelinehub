@@ -9,6 +9,9 @@ import RelatedArticles, { trackRead } from "@/components/research/RelatedArticle
 import ArticleSummarizer from "@/components/research/ArticleSummarizer";
 import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
 
+// How long (ms) to wait before showing the "document taking a while to load?" warning.
+const SLOW_LOAD_TIMEOUT_MS = 8000;
+
 // Determines if a URL points to a Word document.
 // Checks for .doc/.docx as a file extension (before ?, #, / or end of string)
 // to handle CDN URLs while avoiding false positives from directory names like /docs/.
@@ -32,8 +35,18 @@ function DocumentViewer({ fileUrl, title, assumeWordDoc = false }) {
   // "none"   → both viewers failed; show manual options only
   const [viewer, setViewer] = useState("office");
   const [iframeLoading, setIframeLoading] = useState(true);
+  // showSlowWarning: true when the iframe takes >8 s to load, prompting the user to switch
+  const [showSlowWarning, setShowSlowWarning] = useState(false);
 
   const wordDoc = isWordDoc(fileUrl) || assumeWordDoc;
+
+  // Reset slow-warning whenever we change viewers
+  useEffect(() => {
+    if (!wordDoc) return;
+    setShowSlowWarning(false);
+    const timer = setTimeout(() => setShowSlowWarning(true), SLOW_LOAD_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [viewer, wordDoc]);
 
   if (wordDoc) {
     const officeUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
@@ -50,23 +63,56 @@ function DocumentViewer({ fileUrl, title, assumeWordDoc = false }) {
     return (
       <div className="space-y-3">
         {viewer !== "none" ? (
-          <div className="relative rounded-xl overflow-hidden">
-            {iframeLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-50 z-10">
-                <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <>
+            <div className="relative rounded-xl overflow-hidden">
+              {iframeLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-50 z-10">
+                  <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              <iframe
+                key={viewer}
+                src={viewerSrc}
+                title={title}
+                className="w-full rounded-xl border border-slate-200"
+                style={{ height: "80vh", minHeight: 500 }}
+                onError={switchToNext}
+                onLoad={() => { setIframeLoading(false); setShowSlowWarning(false); }}
+                allowFullScreen
+              />
+            </div>
+
+            {/* Slow-load warning — appears if the iframe hasn't finished in ~8 s */}
+            {showSlowWarning && (
+              <div className="flex flex-wrap items-center justify-center gap-3 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                <span>Document taking a while to load?</span>
+                {viewer === "office" ? (
+                  <button
+                    onClick={() => switchTo("google")}
+                    className="font-semibold underline hover:text-amber-900 transition-colors"
+                  >
+                    Try Google Docs viewer
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setViewer("none")}
+                    className="font-semibold underline hover:text-amber-900 transition-colors"
+                  >
+                    Open manually
+                  </button>
+                )}
+                <span className="text-amber-500">or</span>
+                <a
+                  href={fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 font-semibold underline hover:text-amber-900 transition-colors"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Download file
+                </a>
               </div>
             )}
-            <iframe
-              key={viewer}
-              src={viewerSrc}
-              title={title}
-              className="w-full rounded-xl border border-slate-200"
-              style={{ height: "80vh", minHeight: 500 }}
-              onError={switchToNext}
-              onLoad={() => setIframeLoading(false)}
-              allowFullScreen
-            />
-          </div>
+          </>
         ) : (
           <div className="text-center py-10 bg-slate-50 rounded-xl text-slate-500">
             <p className="mb-2 font-medium">Document preview is unavailable in this browser.</p>
