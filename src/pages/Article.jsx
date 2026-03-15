@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Clock, ExternalLink, Brain } from "lucide-react";
+import { ArrowLeft, Clock, ExternalLink, Brain, Download, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 import RelatedArticles, { trackRead } from "@/components/research/RelatedArticles";
@@ -27,9 +27,31 @@ function isPdf(url) {
   return /\.pdf(?:[?#/]|$)/i.test(url);
 }
 
+// Ensures a file URL is absolute. Relative paths are resolved against the
+// current origin as a best-effort fallback. Base44 normally returns absolute
+// CDN URLs, but if a relative path slips through this prevents the external
+// viewers (Office Online, Google Docs) from receiving a bare path.
+function toAbsoluteUrl(url) {
+  if (!url) return url;
+  // Already absolute
+  if (/^https?:\/\//i.test(url)) return url;
+  // Protocol-relative
+  if (url.startsWith("//")) return `https:${url}`;
+  // Relative path — resolve against the current origin. This is a safety net;
+  // in practice file_url values from Base44 are absolute CDN URLs.
+  try {
+    return new URL(url, window.location.origin).href;
+  } catch {
+    return url;
+  }
+}
+
 // Renders a Word or PDF document inline in the browser without forcing a download.
 // assumeWordDoc: set true for uploaded files whose CDN URL may not include the extension.
-function DocumentViewer({ fileUrl, title, assumeWordDoc = false }) {
+function DocumentViewer({ fileUrl: rawFileUrl, title, assumeWordDoc = false }) {
+  // Normalize the URL so external viewers can always reach it.
+  const fileUrl = toAbsoluteUrl(rawFileUrl);
+
   // "office" → Microsoft Office Online (primary, most reliable)
   // "google" → Google Docs Viewer (secondary fallback)
   // "none"   → both viewers failed; show manual options only
@@ -115,14 +137,24 @@ function DocumentViewer({ fileUrl, title, assumeWordDoc = false }) {
           </>
         ) : (
           <div className="text-center py-10 bg-slate-50 rounded-xl text-slate-500">
-            <p className="mb-2 font-medium">Document preview is unavailable in this browser.</p>
-            <p className="text-sm mb-5">Try opening it directly in one of the viewers below.</p>
+            <FileText className="w-10 h-10 mx-auto mb-3 text-indigo-400" />
+            <p className="mb-2 font-medium text-slate-700">Document preview is unavailable in this browser.</p>
+            <p className="text-sm mb-5">You can download the file or open it in an external viewer.</p>
             <div className="flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-full hover:bg-indigo-500 transition-colors text-sm"
+              >
+                <Download className="w-4 h-4" /> Download Document
+              </a>
               <a
                 href={officeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-full hover:bg-indigo-500 transition-colors text-sm"
+                className="inline-flex items-center gap-2 border border-slate-300 text-slate-700 px-5 py-2.5 rounded-full hover:bg-slate-100 transition-colors text-sm"
               >
                 <ExternalLink className="w-4 h-4" /> Open in Office Online
               </a>
