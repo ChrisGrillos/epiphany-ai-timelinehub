@@ -34,6 +34,45 @@ VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
 
 Open [Base44.com](http://Base44.com) and click on Publish.
 
+## Cloudflare Deployment
+
+This project deploys to Cloudflare Workers via the GitHub Actions workflow in
+`.github/workflows/deploy.yml`. Every push to the `main` branch triggers a
+build and deploy.
+
+### Required GitHub Secrets
+
+Set these in **Settings → Secrets and variables → Actions**:
+
+| Secret | Description |
+|--------|-------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token with Workers permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+
+### Important: Disable Cloudflare Git Integration
+
+If Cloudflare created a `cloudflare/workers-autoconfig` branch, that means a
+**Cloudflare git integration** was set up alongside the GitHub Actions deploy.
+The git integration may deploy stale code from that branch, overriding the
+latest code deployed by GitHub Actions from `main`.
+
+**To fix this**, go to your Cloudflare dashboard:
+
+1. Navigate to **Workers & Pages → epiphany-ai-timelinehub → Settings → Build**
+2. **Disconnect** the Git integration (or change the production branch to `main`)
+3. Rely solely on the GitHub Actions workflow for deployments
+
+This ensures the latest code from `main` (including the DocumentViewer for
+.docx files) is always what gets deployed.
+
+### Manual Deploy
+
+```bash
+npm run deploy
+```
+
+This builds and deploys using Wrangler directly.
+
 **Docs & Support**
 
 Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
