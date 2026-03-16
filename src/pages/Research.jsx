@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { normalizeExternalUrl } from "@/utils/url";
 import { base44 } from "@/api/base44Client";
 import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
 import { Brain, ExternalLink, Clock, Search, X, SlidersHorizontal, Sparkles, Upload, CalendarDays } from "lucide-react";
@@ -298,7 +299,8 @@ export default function Research() {
 }
 
 function ArticleCard({ article: a, onTagClick }) {
-  const isExternal = a.source === "medium" && a.medium_url;
+  const mediumUrl = normalizeExternalUrl(a.medium_url, { allowedHosts: ["medium.com"] });
+  const isExternal = a.source === "medium" && mediumUrl;
   const Content = (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden h-full flex flex-col">
       <div className="aspect-video bg-slate-100 overflow-hidden">
@@ -343,7 +345,7 @@ function ArticleCard({ article: a, onTagClick }) {
   );
 
   if (isExternal) {
-    return <a href={a.medium_url} target="_blank" rel="noopener noreferrer" className="block h-full">{Content}</a>;
+    return <a href={mediumUrl} target="_blank" rel="noopener noreferrer" className="block h-full">{Content}</a>;
   }
   return <Link to={createPageUrl("Article") + `?id=${a.id}`} className="block h-full">{Content}</Link>;
 }

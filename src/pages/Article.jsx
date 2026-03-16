@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import RelatedArticles, { trackRead } from "@/components/research/RelatedArticles";
 import ArticleSummarizer from "@/components/research/ArticleSummarizer";
 import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
+import { normalizeExternalUrl } from "@/utils/url";
 
 // How long (ms) to wait before showing the "document taking a while to load?" warning.
 const SLOW_LOAD_TIMEOUT_MS = 8000;
@@ -32,17 +33,18 @@ function isPdf(url) {
 // CDN URLs, but if a relative path slips through this prevents the external
 // viewers (Office Online, Google Docs) from receiving a bare path.
 function toAbsoluteUrl(url) {
-  if (!url) return url;
+  const normalized = typeof url === "string" ? url.trim() : url;
+  if (!normalized) return normalized;
   // Already absolute
-  if (/^https?:\/\//i.test(url)) return url;
+  if (/^https?:\/\//i.test(normalized)) return normalized;
   // Protocol-relative
-  if (url.startsWith("//")) return `https:${url}`;
+  if (normalized.startsWith("//")) return `https:${normalized}`;
   // Relative path — resolve against the current origin. This is a safety net;
   // in practice file_url values from Base44 are absolute CDN URLs.
   try {
-    return new URL(url, window.location.origin).href;
+    return new URL(normalized, window.location.origin).href;
   } catch {
-    return url;
+    return normalized;
   }
 }
 
@@ -245,6 +247,7 @@ export default function Article() {
   const { trackPageView, trackTimeOnPage } = useInteractionTracking();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mediumRedirectError, setMediumRedirectError] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -270,6 +273,17 @@ export default function Article() {
     return trackTimeOnPage(article.id, article.title, 'Article');
   }, [article]);
 
+  // Handle Medium redirects safely and avoid broken relative links.
+  useEffect(() => {
+    if (!article || article.source !== "medium" || !article.medium_url) return;
+    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: ["medium.com"] });
+    if (mediumUrl) {
+      window.location.assign(mediumUrl);
+    } else {
+      setMediumRedirectError("We couldn't open this Medium link because it doesn't look valid.");
+    }
+  }, [article]);
+
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
@@ -284,9 +298,25 @@ export default function Article() {
     </div>
   );
 
-  if (article.source === "medium" && article.medium_url) {
-    window.location.href = article.medium_url;
-    return null;
+  if (article.source === "medium") {
+    if (mediumRedirectError) {
+      return (
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
+          <Brain className="w-12 h-12 mb-4 opacity-30" />
+          <p className="mb-2 font-semibold text-slate-700">This Medium link appears to be invalid.</p>
+          <p className="text-sm text-slate-500 mb-4">Please check the URL in the admin panel or try again later.</p>
+          <Link to={createPageUrl("Research")} className="text-indigo-600 hover:underline">← Back to Research</Link>
+        </div>
+      );
+    }
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center text-slate-500">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm">Redirecting you to Medium…</p>
+        </div>
+      </div>
+    );
   }
 
   return (
