@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import RelatedArticles, { trackRead } from "@/components/research/RelatedArticles";
 import ArticleSummarizer from "@/components/research/ArticleSummarizer";
 import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
-import { normalizeExternalUrl } from "@/utils/url";
+import { MEDIUM_HOSTS, normalizeExternalUrl } from "@/utils/url";
 
 // How long (ms) to wait before showing the "document taking a while to load?" warning.
 const SLOW_LOAD_TIMEOUT_MS = 8000;
@@ -283,7 +283,7 @@ export default function Article() {
   // Handle Medium redirects safely and avoid broken relative links.
   useEffect(() => {
     if (!article || article.source !== "medium" || !article.medium_url || hasRedirectedToMedium.current) return;
-    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: ["medium.com"] });
+    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTS });
     if (mediumUrl) {
       hasRedirectedToMedium.current = true;
       window.location.assign(mediumUrl);

@@ -1,3 +1,5 @@
+export const MEDIUM_HOSTS = ["medium.com"];
+
 // Normalizes and safety-checks an external URL.
 // - Trims whitespace
 // - Adds https:// if the scheme is missing
