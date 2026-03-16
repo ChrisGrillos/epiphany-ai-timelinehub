@@ -284,7 +284,7 @@ export default function Article() {
       hasRedirectedToMedium.current = true;
       window.location.assign(mediumUrl);
     } else {
-      setMediumRedirectError("We couldn't open this Medium link because it must be an https:// URL that points to medium.com.");
+      setMediumRedirectError(`We couldn't open "${article.medium_url}" because Medium links must use https:// and point to medium.com.`);
     }
   }, [article]);
 
@@ -317,7 +317,7 @@ export default function Article() {
       return (
         <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
           <Brain className="w-12 h-12 mb-4 opacity-30" />
-          <p className="mb-2 font-semibold text-slate-700">This Medium link is invalid or unsupported.</p>
+          <p className="mb-2 font-semibold text-slate-700">{mediumRedirectError}</p>
           <p className="text-sm text-slate-500 mb-4">Ensure it starts with https:// and points to medium.com before trying again.</p>
           <Link to={createPageUrl("Research")} className="text-indigo-600 hover:underline">← Back to Research</Link>
         </div>
