@@ -247,15 +247,13 @@ export default function Article() {
   const { trackPageView, trackTimeOnPage } = useInteractionTracking();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mediumRedirectError, setMediumRedirectError] = useState(null);
+  const [mediumRedirectMessage, setMediumRedirectMessage] = useState(null);
   const hasRedirectedToMedium = useRef(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
     if (id) {
-      hasRedirectedToMedium.current = false;
-      setMediumRedirectError(null);
       base44.entities.Article.filter({ id }, "-created_date", 1)
         .then(res => {
           const found = res[0] || null;
@@ -276,6 +274,12 @@ export default function Article() {
     return trackTimeOnPage(article.id, article.title, 'Article');
   }, [article]);
 
+  // Reset redirect guard/message when the loaded article changes
+  useEffect(() => {
+    hasRedirectedToMedium.current = false;
+    setMediumRedirectMessage(null);
+  }, [article?.id]);
+
   // Handle Medium redirects safely and avoid broken relative links.
   useEffect(() => {
     const canRedirectToMedium =
@@ -288,7 +292,7 @@ export default function Article() {
       hasRedirectedToMedium.current = true;
       window.location.assign(mediumUrl);
     } else {
-      setMediumRedirectError("This Medium link can't be opened. Medium links must use https:// and point to medium.com.");
+      setMediumRedirectMessage("This Medium link can't be opened. Medium links must use https:// and point to medium.com.");
     }
   }, [article]);
 
@@ -317,11 +321,11 @@ export default function Article() {
         </div>
       );
     }
-    if (mediumRedirectError) {
+    if (mediumRedirectMessage) {
       return (
         <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
           <Brain className="w-12 h-12 mb-4 opacity-30" />
-          <p className="mb-2 font-semibold text-slate-700">{mediumRedirectError}</p>
+          <p className="mb-2 font-semibold text-slate-700">{mediumRedirectMessage}</p>
           <p className="text-sm text-slate-500 mb-4">The link must be a valid URL that starts with https:// and points to medium.com.</p>
           <Link to={createPageUrl("Research")} className="text-indigo-600 hover:underline">← Back to Research</Link>
         </div>
