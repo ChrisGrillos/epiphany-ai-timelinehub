@@ -1,12 +1,12 @@
-# Cloudflare response headers for all pages
-# Allow iframes from Office Online and Google Docs viewers (used by DocumentViewer)
-# https://developers.cloudflare.com/pages/configuration/headers/
+# Cloudflare response headers
+# https://developers.cloudflare.com/workers/static-assets/headers/
 
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: frame-ancestors 'self'; frame-src 'self' https://view.officeapps.live.com https://docs.google.com
 
 # Static assets — long cache
 /assets/*
