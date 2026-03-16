@@ -248,7 +248,7 @@ export default function Article() {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mediumRedirectMessage, setMediumRedirectMessage] = useState(null);
-  const hasAttemptedMediumRedirect = useRef(false);
+  const mediumRedirectAttempted = useRef(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -276,7 +276,7 @@ export default function Article() {
 
   // Reset redirect guard/message when the loaded article changes
   useEffect(() => {
-    hasAttemptedMediumRedirect.current = false;
+    mediumRedirectAttempted.current = false;
     setMediumRedirectMessage(null);
   }, [article?.id]);
 
@@ -285,14 +285,14 @@ export default function Article() {
     const canRedirectToMedium =
       article?.source === "medium" &&
       article.medium_url &&
-      !hasAttemptedMediumRedirect.current;
+      !mediumRedirectAttempted.current;
     if (!canRedirectToMedium) return;
     const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, requireHttps: true });
     if (mediumUrl) {
-      hasAttemptedMediumRedirect.current = true;
+      mediumRedirectAttempted.current = true;
       window.location.assign(mediumUrl);
     } else {
-      hasAttemptedMediumRedirect.current = true;
+      mediumRedirectAttempted.current = true;
       setMediumRedirectMessage("This Medium link can't be opened. It must be a valid https://medium.com URL.");
     }
   }, [article]);
@@ -317,7 +317,7 @@ export default function Article() {
         <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
           <Brain className="w-12 h-12 mb-4 opacity-30" />
           <p className="mb-2 font-semibold text-slate-700">No Medium link is configured for this article.</p>
-          <p className="text-sm text-slate-500 mb-4">Please try again later or contact the site owner if you expect a Medium link here.</p>
+          <p className="text-sm text-slate-500 mb-4">Please contact the site owner if you expect a Medium link here.</p>
           <Link to={createPageUrl("Research")} className="text-indigo-600 hover:underline">← Back to Research</Link>
         </div>
       );
