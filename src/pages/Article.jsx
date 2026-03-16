@@ -299,6 +299,16 @@ export default function Article() {
   );
 
   if (article.source === "medium") {
+    if (!article.medium_url) {
+      return (
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
+          <Brain className="w-12 h-12 mb-4 opacity-30" />
+          <p className="mb-2 font-semibold text-slate-700">No Medium link is configured for this article.</p>
+          <p className="text-sm text-slate-500 mb-4">Add a valid Medium URL in the admin panel to enable the redirect.</p>
+          <Link to={createPageUrl("Research")} className="text-indigo-600 hover:underline">← Back to Research</Link>
+        </div>
+      );
+    }
     if (mediumRedirectError) {
       return (
         <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
