@@ -276,16 +276,10 @@ export default function Article() {
     return trackTimeOnPage(article.id, article.title, 'Article');
   }, [article]);
 
-  // Reset redirect guard/error when switching articles
-  useEffect(() => {
-    hasRedirectedToMedium.current = false;
-    setMediumRedirectError(null);
-  }, [article?.id]);
-
   // Handle Medium redirects safely and avoid broken relative links.
   useEffect(() => {
     if (!article || article.source !== "medium" || !article.medium_url || hasRedirectedToMedium.current) return;
-    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTS });
+    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTS, allowHttp: false });
     if (mediumUrl) {
       hasRedirectedToMedium.current = true;
       window.location.assign(mediumUrl);
