@@ -299,7 +299,7 @@ export default function Research() {
 }
 
 function ArticleCard({ article: a, onTagClick }) {
-  const mediumUrl = normalizeExternalUrl(a.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, allowHttp: false });
+  const mediumUrl = normalizeExternalUrl(a.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, requireHttps: true });
   const isExternal = a.source === "medium" && mediumUrl;
   const Content = (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden h-full flex flex-col">

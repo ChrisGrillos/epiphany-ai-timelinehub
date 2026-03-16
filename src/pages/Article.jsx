@@ -279,7 +279,7 @@ export default function Article() {
   // Handle Medium redirects safely and avoid broken relative links.
   useEffect(() => {
     if (!article || article.source !== "medium" || !article.medium_url || hasRedirectedToMedium.current) return;
-    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, allowHttp: false });
+    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, requireHttps: true });
     if (mediumUrl) {
       hasRedirectedToMedium.current = true;
       window.location.assign(mediumUrl);
@@ -308,7 +308,7 @@ export default function Article() {
         <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
           <Brain className="w-12 h-12 mb-4 opacity-30" />
           <p className="mb-2 font-semibold text-slate-700">No Medium link is configured for this article.</p>
-          <p className="text-sm text-slate-500 mb-4">Add a valid Medium URL in the admin panel to enable the redirect.</p>
+          <p className="text-sm text-slate-500 mb-4">Please try again later or contact the site owner if you expect a Medium link here.</p>
           <Link to={createPageUrl("Research")} className="text-indigo-600 hover:underline">← Back to Research</Link>
         </div>
       );
@@ -318,7 +318,7 @@ export default function Article() {
         <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
           <Brain className="w-12 h-12 mb-4 opacity-30" />
           <p className="mb-2 font-semibold text-slate-700">{mediumRedirectError}</p>
-          <p className="text-sm text-slate-500 mb-4">Ensure it starts with https:// and points to medium.com before trying again.</p>
+          <p className="text-sm text-slate-500 mb-4">The link must be a valid URL that starts with https:// and points to medium.com.</p>
           <Link to={createPageUrl("Research")} className="text-indigo-600 hover:underline">← Back to Research</Link>
         </div>
       );
