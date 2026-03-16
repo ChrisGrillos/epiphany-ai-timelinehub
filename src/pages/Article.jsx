@@ -292,7 +292,7 @@ export default function Article() {
       hasRedirectedToMedium.current = true;
       window.location.assign(mediumUrl);
     } else {
-      setMediumRedirectMessage("This Medium link can't be opened. Medium links must use https:// and point to medium.com.");
+      setMediumRedirectMessage("This Medium link can't be opened. It must be a valid https://medium.com URL.");
     }
   }, [article]);
 
