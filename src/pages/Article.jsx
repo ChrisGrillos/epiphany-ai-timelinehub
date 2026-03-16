@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
@@ -248,6 +248,7 @@ export default function Article() {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mediumRedirectError, setMediumRedirectError] = useState(null);
+  const hasRedirectedToMedium = useRef(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -273,11 +274,18 @@ export default function Article() {
     return trackTimeOnPage(article.id, article.title, 'Article');
   }, [article]);
 
+  // Reset redirect guard/error when switching articles
+  useEffect(() => {
+    hasRedirectedToMedium.current = false;
+    setMediumRedirectError(null);
+  }, [article?.id]);
+
   // Handle Medium redirects safely and avoid broken relative links.
   useEffect(() => {
-    if (!article || article.source !== "medium" || !article.medium_url) return;
+    if (!article || article.source !== "medium" || !article.medium_url || hasRedirectedToMedium.current) return;
     const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: ["medium.com"] });
     if (mediumUrl) {
+      hasRedirectedToMedium.current = true;
       window.location.assign(mediumUrl);
     } else {
       setMediumRedirectError("We couldn't open this Medium link because it doesn't look valid.");

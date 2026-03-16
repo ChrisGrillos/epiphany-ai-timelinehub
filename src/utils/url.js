@@ -9,6 +9,7 @@ export function normalizeExternalUrl(rawUrl, { allowedHosts, allowHttp = true } 
   if (!trimmed) return null;
 
   // Ensure we always have a scheme to satisfy URL parsing
+  // RFC 3986 valid URI schemes: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." ) followed by ":"
   const withScheme = /^[a-zA-Z][a-zA-Z0-9+\-.]*:/.test(trimmed)
     ? trimmed
     : `https://${trimmed.replace(/^\/\//, "")}`;
