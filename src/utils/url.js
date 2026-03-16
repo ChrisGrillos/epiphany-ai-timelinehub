@@ -1,8 +1,5 @@
 export const MEDIUM_HOSTNAMES = ["medium.com"];
 
-// RFC 3986 valid URI schemes: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." ) followed by ":"
-const URI_SCHEME_PATTERN = /^[a-zA-Z][a-zA-Z0-9+\-.]*:/;
-
 // Normalizes and safety-checks an external URL.
 // - Trims whitespace
 // - Adds https:// if the scheme is missing
@@ -14,7 +11,7 @@ export function normalizeExternalUrl(rawUrl, { allowedHosts, requireHttps = fals
   if (!trimmed) return null;
 
   // Ensure we always have a scheme to satisfy URL parsing
-  const withScheme = URI_SCHEME_PATTERN.test(trimmed)
+  const withScheme = /^https?:/i.test(trimmed)
     ? trimmed
     : `https://${trimmed.replace(/^\/\//, "")}`;
 
