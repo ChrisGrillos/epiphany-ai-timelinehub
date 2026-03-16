@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { MEDIUM_HOSTS, normalizeExternalUrl } from "@/utils/url";
+import { MEDIUM_HOSTNAMES, normalizeExternalUrl } from "@/utils/url";
 import { base44 } from "@/api/base44Client";
 import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
 import { Brain, ExternalLink, Clock, Search, X, SlidersHorizontal, Sparkles, Upload, CalendarDays } from "lucide-react";
@@ -299,7 +299,7 @@ export default function Research() {
 }
 
 function ArticleCard({ article: a, onTagClick }) {
-  const mediumUrl = normalizeExternalUrl(a.medium_url, { allowedHosts: MEDIUM_HOSTS, allowHttp: false });
+  const mediumUrl = normalizeExternalUrl(a.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, allowHttp: false });
   const isExternal = a.source === "medium" && mediumUrl;
   const Content = (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden h-full flex flex-col">

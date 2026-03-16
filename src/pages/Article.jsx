@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import RelatedArticles, { trackRead } from "@/components/research/RelatedArticles";
 import ArticleSummarizer from "@/components/research/ArticleSummarizer";
 import { useInteractionTracking } from "@/components/tracking/useInteractionTracking";
-import { MEDIUM_HOSTS, normalizeExternalUrl } from "@/utils/url";
+import { MEDIUM_HOSTNAMES, normalizeExternalUrl } from "@/utils/url";
 
 // How long (ms) to wait before showing the "document taking a while to load?" warning.
 const SLOW_LOAD_TIMEOUT_MS = 8000;
@@ -279,12 +279,12 @@ export default function Article() {
   // Handle Medium redirects safely and avoid broken relative links.
   useEffect(() => {
     if (!article || article.source !== "medium" || !article.medium_url || hasRedirectedToMedium.current) return;
-    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTS, allowHttp: false });
+    const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, allowHttp: false });
     if (mediumUrl) {
       hasRedirectedToMedium.current = true;
       window.location.assign(mediumUrl);
     } else {
-      setMediumRedirectError(`We couldn't open "${article.medium_url}" because Medium links must use https:// and point to medium.com.`);
+      setMediumRedirectError("This Medium link can't be opened. Medium links must use https:// and point to medium.com.");
     }
   }, [article]);
 
