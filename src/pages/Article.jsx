@@ -248,7 +248,7 @@ export default function Article() {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mediumRedirectMessage, setMediumRedirectMessage] = useState(null);
-  const hasRedirectedToMedium = useRef(false);
+  const hasAttemptedMediumRedirect = useRef(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -276,7 +276,7 @@ export default function Article() {
 
   // Reset redirect guard/message when the loaded article changes
   useEffect(() => {
-    hasRedirectedToMedium.current = false;
+    hasAttemptedMediumRedirect.current = false;
     setMediumRedirectMessage(null);
   }, [article?.id]);
 
@@ -285,13 +285,14 @@ export default function Article() {
     const canRedirectToMedium =
       article?.source === "medium" &&
       article.medium_url &&
-      !hasRedirectedToMedium.current;
+      !hasAttemptedMediumRedirect.current;
     if (!canRedirectToMedium) return;
     const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, requireHttps: true });
     if (mediumUrl) {
-      hasRedirectedToMedium.current = true;
+      hasAttemptedMediumRedirect.current = true;
       window.location.assign(mediumUrl);
     } else {
+      hasAttemptedMediumRedirect.current = true;
       setMediumRedirectMessage("This Medium link can't be opened. It must be a valid https://medium.com URL.");
     }
   }, [article]);
