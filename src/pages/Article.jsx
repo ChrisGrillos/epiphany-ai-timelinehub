@@ -250,12 +250,6 @@ export default function Article() {
   const [mediumRedirectError, setMediumRedirectError] = useState(null);
   const hasRedirectedToMedium = useRef(false);
 
-  const canRedirectToMedium = (currentArticle) => (
-    currentArticle?.source === "medium" &&
-    currentArticle.medium_url &&
-    !hasRedirectedToMedium.current
-  );
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
@@ -284,7 +278,11 @@ export default function Article() {
 
   // Handle Medium redirects safely and avoid broken relative links.
   useEffect(() => {
-    if (!canRedirectToMedium(article)) return;
+    const canRedirectToMedium =
+      article?.source === "medium" &&
+      article.medium_url &&
+      !hasRedirectedToMedium.current;
+    if (!canRedirectToMedium) return;
     const mediumUrl = normalizeExternalUrl(article.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, requireHttps: true });
     if (mediumUrl) {
       hasRedirectedToMedium.current = true;
