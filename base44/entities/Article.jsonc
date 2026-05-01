@@ -1,0 +1,76 @@
+{
+  "name": "Article",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "excerpt": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "cover_image": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author name(s)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Research",
+        "AI",
+        "Strategy",
+        "Think Tank",
+        "Case Study",
+        "Other"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "medium",
+        "upload",
+        "written",
+        "zenodo"
+      ],
+      "default": "written"
+    },
+    "medium_url": {
+      "type": "string"
+    },
+    "zenodo_url": {
+      "type": "string",
+      "description": "Zenodo record URL (e.g. https://zenodo.org/records/...)"
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "published": {
+      "type": "boolean",
+      "default": false
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "read_time": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

@@ -311,6 +311,28 @@ export default function Article() {
     </div>
   );
 
+  if (article.source === "zenodo") {
+    if (!article.zenodo_url) {
+      return (
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center text-slate-500 px-6 text-center">
+          <Brain className="w-12 h-12 mb-4 opacity-30" />
+          <p className="mb-2 font-semibold text-slate-700">No Zenodo link is configured for this article.</p>
+          <Link to={createPageUrl("Research")} className="text-indigo-600 hover:underline">← Back to Research</Link>
+        </div>
+      );
+    }
+    // Redirect to Zenodo
+    window.location.assign(article.zenodo_url);
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center text-slate-500">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm">Opening on Zenodo…</p>
+        </div>
+      </div>
+    );
+  }
+
   if (article.source === "medium") {
     if (!article.medium_url) {
       return (

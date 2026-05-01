@@ -7,11 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, Upload, Link, FileText } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, Link, FileText, FlaskConical } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MediumBulkImporter from "./MediumBulkImporter";
 
-const EMPTY = { title: "", author: "", excerpt: "", content: "", category: "Research", source: "written", medium_url: "", file_url: "", cover_image: "", published: false, featured: false, read_time: 5, tags: [] };
+const EMPTY = { title: "", author: "", excerpt: "", content: "", category: "Research", source: "written", medium_url: "", zenodo_url: "", file_url: "", cover_image: "", published: false, featured: false, read_time: 5, tags: [] };
 
 export default function ArticleAdmin() {
   const [articles, setArticles] = useState([]);
@@ -124,6 +124,7 @@ export default function ArticleAdmin() {
                       <SelectItem value="written">Written (markdown)</SelectItem>
                       <SelectItem value="medium">Medium Article</SelectItem>
                       <SelectItem value="upload">Uploaded Document</SelectItem>
+                      <SelectItem value="zenodo">Zenodo Record</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -142,6 +143,14 @@ export default function ArticleAdmin() {
                 <div>
                   <Label className="mb-1.5 block flex items-center gap-1"><Link className="w-3.5 h-3.5" /> Medium URL</Label>
                   <Input value={editing.medium_url} onChange={e => setEditing({...editing, medium_url: e.target.value})} placeholder="https://medium.com/..." />
+                </div>
+              )}
+
+              {editing.source === "zenodo" && (
+                <div>
+                  <Label className="mb-1.5 block flex items-center gap-1"><FlaskConical className="w-3.5 h-3.5" /> Zenodo Record URL</Label>
+                  <Input value={editing.zenodo_url || ""} onChange={e => setEditing({...editing, zenodo_url: e.target.value})} placeholder="https://zenodo.org/records/..." />
+                  <p className="text-xs text-slate-400 mt-1">Paste the full Zenodo record URL. Users will be linked directly to Zenodo to view/download the paper.</p>
                 </div>
               )}
 

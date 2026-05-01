@@ -300,7 +300,9 @@ export default function Research() {
 
 function ArticleCard({ article: a, onTagClick }) {
   const mediumUrl = normalizeExternalUrl(a.medium_url, { allowedHosts: MEDIUM_HOSTNAMES, requireHttps: true });
-  const isExternal = a.source === "medium" && mediumUrl;
+  const isZenodo = a.source === "zenodo" && a.zenodo_url;
+  const isExternal = (a.source === "medium" && mediumUrl) || isZenodo;
+  const externalUrl = isZenodo ? a.zenodo_url : mediumUrl;
   const Content = (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden h-full flex flex-col">
       <div className="aspect-video bg-slate-100 overflow-hidden">
@@ -317,6 +319,7 @@ function ArticleCard({ article: a, onTagClick }) {
           {a.category && <Badge className="bg-indigo-50 text-indigo-600 border-0 text-xs">{a.category}</Badge>}
           {a.source === "medium" && <Badge className="bg-green-50 text-green-600 border-0 text-xs">Medium</Badge>}
           {a.source === "upload" && <Badge className="bg-amber-50 text-amber-600 border-0 text-xs">Document</Badge>}
+          {a.source === "zenodo" && <Badge className="bg-blue-50 text-blue-600 border-0 text-xs">Zenodo</Badge>}
           {a.read_time && (
             <span className="text-slate-400 text-xs flex items-center gap-1 ml-auto">
               <Clock className="w-3 h-3" />{a.read_time} min
@@ -345,7 +348,7 @@ function ArticleCard({ article: a, onTagClick }) {
   );
 
   if (isExternal) {
-    return <a href={mediumUrl} target="_blank" rel="noopener noreferrer" className="block h-full">{Content}</a>;
+    return <a href={externalUrl} target="_blank" rel="noopener noreferrer" className="block h-full">{Content}</a>;
   }
   return <Link to={createPageUrl("Article") + `?id=${a.id}`} className="block h-full">{Content}</Link>;
 }
